@@ -12,6 +12,7 @@ class Token_Error {
         this.descripcionError = descripcion;
         this.filaError = fila;
         this.columnaError = columna;
+        this.tipoTokenErrorEnString = this.getTipoTokenErrorEnString();
     }
     getCaracterError() {
         return this.caracterError;
@@ -28,7 +29,7 @@ class Token_Error {
     getColumnaError() {
         return this.columnaError;
     }
-    getTipoErrorEnString() {
+    getTipoTokenErrorEnString() {
         let nombreTokenError = "";
         switch (this.tipoTokenError) {
             case TipoError.LEXICO:
