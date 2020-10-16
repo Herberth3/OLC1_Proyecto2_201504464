@@ -5,8 +5,8 @@ export class Analizador_Lexico {
     private estado: number;
     private auxLexema: string;
     private textoDocumento: string;
-    private lista_Tokens: Array<Token>;
-    private lista_Errores: Array<Token_Error>;
+    private lista_Tokens = new Array<Token>();
+    private lista_Errores = new Array<Token_Error>();
 
     constructor() {}
 
@@ -86,9 +86,9 @@ export class Analizador_Lexico {
                     else {
                         if (c == '#' && i == this.textoDocumento.length - 1) {
                             if (this.lista_Errores.length > 0) {
-                                alert("Se han encontrado errores lexicos");
+                                console.log("Se han encontrado errores lexicos");
                             }
-                            alert("Se ha concluido el analisis lexico");
+                            console.log("Se ha concluido el analisis lexico");
                         } else {
                             this.addTokenError(c, filaToken, columnaToken);
                         }

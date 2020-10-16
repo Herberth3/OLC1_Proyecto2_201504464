@@ -85,9 +85,23 @@ executeCodeBtn.addEventListener('click', () => {
         console.error(err);
     }*/
 
+    let nodeUrl = "http://localhost:4000/analizar";
+
+    $.post(nodeUrl,
+        {
+            code:userCode
+        },
+        function(data, status){
+        if (status.toString() == "success") {
+            console.log(data);
+        } else {
+            alert("Error estado de conexion: " + status);
+        }
+    })
+
     // Print to the console
     editorLib.printToConsole();
-    console.log(userCode);
+    //console.log(userCode);
 });
 /***************************TRANSLATE CODE*********************************/
 

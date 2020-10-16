@@ -67,12 +67,14 @@ export class Token {
     private lexema: string;
     private filaToken: number;
     private columnaToken: number;
+    private tipoTokenEnString: string;
 
     constructor(tipo: Tipo, auxLex: string, fila: number, columna: number) {
         this.tipoToken = tipo;
         this.lexema = auxLex;
         this.filaToken = fila;
         this.columnaToken = columna;
+        this.tipoTokenEnString = this.getTipoEnString()
     }
 
     getTipo(): Tipo {

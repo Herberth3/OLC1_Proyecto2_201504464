@@ -9,6 +9,7 @@ export class Token_Error {
     private descripcionError: string;
     private filaError: number;
     private columnaError: number;
+    private tipoTokenErrorEnString: string;
 
     constructor(caracter: string, tipoError: TipoError, descripcion: string, fila: number, columna: number) {
         this.caracterError = caracter;
@@ -16,6 +17,7 @@ export class Token_Error {
         this.descripcionError = descripcion;
         this.filaError = fila;
         this.columnaError = columna;
+        this.tipoTokenErrorEnString = this.getTipoTokenErrorEnString();
     }
 
     getCaracterError(): string {
@@ -38,7 +40,7 @@ export class Token_Error {
         return this.columnaError;
     }
 
-    getTipoErrorEnString(): string {
+    getTipoTokenErrorEnString(): string {
         let nombreTokenError: string = "";
 
         switch (this.tipoTokenError) {
