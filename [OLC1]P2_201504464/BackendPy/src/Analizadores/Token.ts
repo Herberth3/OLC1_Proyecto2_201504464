@@ -59,7 +59,8 @@ export enum Tipo {
     SIGNO_OR,
     SIGNO_NOT,
     SIGNO_XOR,
-    DESCONOCIDO
+    DESCONOCIDO,
+    ULTIMO
 }
 
 export class Token {
@@ -276,6 +277,9 @@ export class Token {
                 break;
             case Tipo.SIGNO_XOR:
                 nombreToken = "Signo_XOR";
+                break;
+            case Tipo.ULTIMO:
+                nombreToken = "Ultimo";
                 break;
             default:
                 nombreToken = "Desconocido";
