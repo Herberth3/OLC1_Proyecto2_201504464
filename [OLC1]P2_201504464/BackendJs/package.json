@@ -1,0 +1,23 @@
+{
+  "name": "backendjs",
+  "version": "1.0.0",
+  "description": "server to translator javascript file",
+  "main": "conexion.js",
+  "scripts": {
+    "start": "node dist/conexion.js",
+    "dev": "nodemon dist/conexion.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Herberth Avila",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "jison": "^0.4.18",
+    "typescript": "^4.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.5"
+  }
+}
