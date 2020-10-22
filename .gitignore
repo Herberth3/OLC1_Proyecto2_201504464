@@ -6,3 +6,4 @@ OtrosProyectos
 *.png
 *.docx
 debug.log
+node_modules
