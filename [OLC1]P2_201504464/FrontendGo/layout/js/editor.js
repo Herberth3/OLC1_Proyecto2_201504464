@@ -85,23 +85,28 @@ executeCodeBtn.addEventListener('click', () => {
         console.error(err);
     }*/
 
-    let nodeUrl = "http://localhost:5000/analizar";
+    if (userCode != "") {
+        let nodeUrl = "http://localhost:5000/analizar";
 
-    $.post(nodeUrl,
-        {
-            code:userCode
-        },
-        function(data, status){
-        if (status.toString() == "success") {
-            console.log(data);
-        } else {
-            alert("Error estado de conexion: " + status);
-        }
-    })
+        $.post(nodeUrl,
+            {
+                code: userCode
+            },
+            function (data, status) {
+                if (status.toString() == "success") {
+                    console.log(data);
+                } else {
+                    alert("Error estado de conexion: " + status);
+                }
+            })
 
-    // Print to the console
-    editorLib.printToConsole();
-    //console.log(userCode);
+        // Print to the console
+        editorLib.printToConsole();
+        //console.log(userCode);
+    } else {
+        alert("Editor vacio, ingrese contenido");
+    }
+
 });
 /***************************TRANSLATE CODE*********************************/
 
