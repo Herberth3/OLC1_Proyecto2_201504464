@@ -25,7 +25,6 @@ export enum Tipo {
     RESERVADA_OUT,
     RESERVADA_PRINTLN,
     RESERVADA_PRINT,
-    RESERVADA_NEW,
     IDENTIFICADOR,
     CADENA_STRING,
     CADENA_CHAR,
@@ -142,9 +141,6 @@ export class Token {
                 break;
             case Tipo.RESERVADA_MAIN:
                 nombreToken = "Reservada_Main";
-                break;
-            case Tipo.RESERVADA_NEW:
-                nombreToken = "Reservada_New";
                 break;
             case Tipo.RESERVADA_OUT:
                 nombreToken = "Reservada_Out";

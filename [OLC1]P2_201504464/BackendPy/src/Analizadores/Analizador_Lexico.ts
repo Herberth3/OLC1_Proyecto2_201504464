@@ -152,8 +152,6 @@ export class Analizador_Lexico {
                             this.addToken(Tipo.RESERVADA_PRINTLN, filaToken, columnaToken - this.auxLexema.length);
                         } else if (this.auxLexema == 'print') {
                             this.addToken(Tipo.RESERVADA_PRINT, filaToken, columnaToken - this.auxLexema.length);
-                        } else if (this.auxLexema == 'new') {
-                            this.addToken(Tipo.RESERVADA_NEW, filaToken, columnaToken - this.auxLexema.length);
                         } else {
                             this.addToken(Tipo.IDENTIFICADOR, filaToken, columnaToken - this.auxLexema.length);
                         }

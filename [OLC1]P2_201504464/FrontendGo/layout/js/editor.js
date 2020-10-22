@@ -85,7 +85,7 @@ executeCodeBtn.addEventListener('click', () => {
         console.error(err);
     }*/
 
-    let nodeUrl = "http://localhost:4000/analizar";
+    let nodeUrl = "http://localhost:5000/analizar";
 
     $.post(nodeUrl,
         {
