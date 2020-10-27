@@ -1,3 +1,11 @@
+%{
+    const { Abstrac_Sintactic_Tree } = require('../dist/AST/Abstrac_Sintactic_Tree');
+    const { Class_Interface } = require('../dist/AST/Instructions/Class_Interface');
+    const { Declaration } = require('../dist/AST/Declaration-Definition-Global/Declaration');
+    const { Identifier } = require('../dist/AST/Declaration-Definition-Global/Identifier');
+    const { Asignation } = require('../dist/AST/Declaration-Definition-Global/Asignation');
+%}
+
 /* Definición Léxica */
 %lex
 
@@ -52,11 +60,11 @@
 "*"					return 's_por';
 "/"					return 's_division';
 
+">="				return 's_mayor_igual_que';
+"<="				return 's_menor_igual_que';
 "<"					return 's_menor_que';
 ">"					return 's_mayor_que';
 "!="				return 's_diferente_de';
-">="				return 's_mayor_igual_que';
-"<="				return 's_menor_igual_que';
 "=="				return 's_doble_igual';
 "="					return 's_igual';
 "&&"				return 's_AND';
@@ -74,7 +82,7 @@
 <<EOF>>				return 'EOF';
 
 .					{ 
-                        console.log('Este es un error léxico: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + yylloc.first_column);
+                        console.log('Este es un error LEXICO: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + yylloc.first_column);
                         
                     }
 
@@ -98,47 +106,52 @@
 
 INICIO
 	: LIST_INSTRUCTIONS EOF {
-		// cuando se haya reconocido la entrada completa retornamos la entrada traducida
-		return $1;
+		// Ya analizada la entrada, se retorna el objeto ast de la clase Abstrac_Sintactic_Tree
+        let ast = new Abstrac_Sintactic_Tree($1);
+		return ast;
 	}
 ;
 
 LIST_INSTRUCTIONS
-    : LIST_INSTRUCTIONS INSTRUCTIONS
-    | INSTRUCTIONS
+    : LIST_INSTRUCTIONS INSTRUCTIONS    {$1.push($2); $$ = $1;}
+    | INSTRUCTIONS  {$$ = [$1];}
+    | error { console.error('Este es un error SINTACTICO en Instrucciones: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column); }
 ;
 
 INSTRUCTIONS
-    : r_public r_class identificador BLOCK_DECLARATION_GLOBAL
-    | r_public r_interface identificador BLOCK_DEFINITION_FUNCTIONS
+    : r_public r_class identificador BLOCK_DECLARATION_GLOBAL   {$$ = new Class_Interface($1, $2, $3, $4, this._$.first_column);}
+    | r_public r_interface identificador BLOCK_DEFINITION_FUNCTIONS {$$ = new Class_Interface($1, $2, $3, $4, this._$.first_column);}
 ;
 
 BLOCK_DECLARATION_GLOBAL
-    : llave_izq LIST_DECLARATION_GLOBAL llave_der
-    | llave_izq llave_der
+    : llave_izq LIST_DECLARATION_GLOBAL llave_der   {$$ = $2;}
+    | llave_izq llave_der   {$$ = [];}
 ;
 
 BLOCK_DEFINITION_FUNCTIONS
-    : llave_izq LIST_DEFINITION_FUNCTIONS llave_der
-    | llave_izq llave_der
+    : llave_izq LIST_DEFINITION_FUNCTIONS llave_der {$$ = $2;}
+    | llave_izq llave_der   {$$ = [];}
 ;
 
 /******************************************************************************************************************/
 
 LIST_DECLARATION_GLOBAL
-    : LIST_DECLARATION_GLOBAL DECLARATION_GLOBAL
-    | DECLARATION_GLOBAL
+    : LIST_DECLARATION_GLOBAL DECLARATION_GLOBAL    {$1.push($2); $$ = $1;}
+    | DECLARATION_GLOBAL    {$$ = [$1];}
+    | error { console.error('Este es un error SINTACTICO en Declaraciones globales: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column) }
 ;
 
 DECLARATION_GLOBAL
-    : DECLARATION punto_y_coma
-    | ASIGNATION punto_y_coma
+    : DECLARATION punto_y_coma  {$$ = $1;}
+    | ASIGNATION punto_y_coma   {$$ = $1;}
+    | OTHERS_ASIGNATIONS punto_y_coma
     | METHOD
 ;
 
 LIST_DEFINITION_FUNCTIONS
-    : LIST_DEFINITION_FUNCTIONS DEFINITION_FUNCTIONS
-    | DEFINITION_FUNCTIONS
+    : LIST_DEFINITION_FUNCTIONS DEFINITION_FUNCTIONS    {$1.push($2); $$ = $1;}
+    | DEFINITION_FUNCTIONS  {$$ = [$1];}
+    | error { console.error('Este es un error SINTACTICO en Definicion de funciones: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column) }
 ;
 
 DEFINITION_FUNCTIONS
@@ -148,28 +161,38 @@ DEFINITION_FUNCTIONS
 /******************************************************************************************************************/
 
 DECLARATION
-    : TYPE_DATA LIST_DECLA_ASIGN
+    : TYPE_DATA LIST_DECLA_ASIGN    {$$ = new Declaration($1, $2, this._$.first_column);}
 ;
 
 TYPE_DATA
-    : r_int
-    | r_boolean
-    | r_double
-    | r_String
-    | r_char
+    : r_int {$$ = $1;}
+    | r_boolean {$$ = $1;}
+    | r_double  {$$ = $1;}
+    | r_String  {$$ = $1;}
+    | r_char    {$$ = $1;}
 ;
 
 LIST_DECLA_ASIGN
-    : identificador
-    | identificador s_igual EXPRESION
-    | identificador coma LIST_DECLA_ASIGN
-    | identificador s_igual EXPRESION coma LIST_DECLA_ASIGN
+    : LIST_DECLA_ASIGN coma DECLA_ASIGN {$1.push($3); $$ = $1;}
+    | DECLA_ASIGN   {$$ = [$1];}
+;
+
+DECLA_ASIGN
+    : identificador {$$ = new Identifier($1);}
+    | identificador s_igual EXPRESION   {$$ = new Asignation($1, $3, false, 1);}
 ;
 
 /******************************************************************************************************************/
 
 ASIGNATION
-    : identificador s_igual EXPRESION
+    : identificador s_igual EXPRESION   {$$ = new Asignation($1, $3, true, this._$.first_column);}
+;
+
+/******************************************************************************************************************/
+
+OTHERS_ASIGNATIONS
+    : identificador s_pos_incremento
+    | identificador s_pos_decremento
 ;
 
 /******************************************************************************************************************/
@@ -204,11 +227,14 @@ BLOCK_SENTENCIAS
 LIST_SENTENCIAS
     : LIST_SENTENCIAS SENTENCIAS
     | SENTENCIAS
+    | error { console.error('Este es un error SINTACTICO en Sentencias: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column) }
 ;
 
 SENTENCIAS
     : DECLARATION punto_y_coma
     | ASIGNATION punto_y_coma
+    | OTHERS_ASIGNATIONS punto_y_coma
+    | identificador BLOCK_PARAMETROS punto_y_coma
     | FOR
     | WHILE
     | DO_WHILE
@@ -231,6 +257,7 @@ BLOCK_CYCLE
 LIST_BLOQUE_CICLO
     : LIST_BLOQUE_CICLO SENTENCIAS_CICLO
     | SENTENCIAS_CICLO
+    | error punto_y_coma { console.error('Este es un error SINTACTICO en Bloque ciclo ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column) }
 ;
 
 SENTENCIAS_CICLO
@@ -269,8 +296,8 @@ RETURN
 /******************************************************************************************************************/
 
 PRINT
-    : r_System punto r_out r_println parentesis_izq EXPRESION parentesis_der punto_y_coma
-    | r_System punto r_out r_print parentesis_izq EXPRESION parentesis_der punto_y_coma
+    : r_System punto r_out punto r_println parentesis_izq EXPRESION parentesis_der punto_y_coma
+    | r_System punto r_out punto r_print parentesis_izq EXPRESION parentesis_der punto_y_coma
 ;
 
 /******************************************************************************************************************/
@@ -301,11 +328,8 @@ EXPRESION
     | cadena_string                                { $$ = `${$1}`; }
     | r_true                                 { $$ = `verdadero` }
     | r_false                                { $$ = `falso` }
-    | identificador CALL_METHOD                         { $$ = $1 }
-;
-
-CALL_METHOD
-    : BLOCK_PARAMETROS
+    | identificador                      { $$ = $1 }
+    | identificador BLOCK_PARAMETROS
 ;
 
 /******************************************************************************************************************/
