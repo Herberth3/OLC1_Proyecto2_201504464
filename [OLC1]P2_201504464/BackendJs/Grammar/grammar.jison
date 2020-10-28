@@ -4,12 +4,15 @@
     const { Declaration } = require('../dist/AST/Declaration-Definition-Global/Declaration');
     const { Identifier } = require('../dist/AST/Declaration-Definition-Global/Identifier');
     const { Asignation } = require('../dist/AST/Declaration-Definition-Global/Asignation');
+    const { Type_Operation } = require('../dist/AST/Types');
+    const { Aritmetica } = require('../dist/AST/Expressions/Aritmetica');
+    const { Primitivo } = require('../dist/AST/Expressions/Primitivo');
 %}
 
 /* Definición Léxica */
 %lex
 
-%options case-insensitive
+%options case-sensitive
 
 %%
 \s+											// se ignoran espacios en blanco
@@ -178,7 +181,7 @@ LIST_DECLA_ASIGN
 ;
 
 DECLA_ASIGN
-    : identificador {$$ = new Identifier($1);}
+    : identificador {$$ = new Identifier($1, null, Type_Operation.IDENTIFICADOR, false, this._$.first_column);}
     | identificador s_igual EXPRESION   {$$ = new Asignation($1, $3, false, 1);}
 ;
 
@@ -191,8 +194,8 @@ ASIGNATION
 /******************************************************************************************************************/
 
 OTHERS_ASIGNATIONS
-    : identificador s_pos_incremento
-    | identificador s_pos_decremento
+    : identificador s_pos_incremento    {$$ = new Identifier($1, null, Type_Operation.POS_INCREMENTO, false, this._$.first_column);}
+    | identificador s_pos_decremento    {$$ = new Identifier($1, null, Type_Operation.POS_DECREMENTO, false, this._$.first_column);}
 ;
 
 /******************************************************************************************************************/
@@ -208,13 +211,17 @@ TYPE_METHOD
 ;
 
 BLOCK_PARAMETROS
-    : parentesis_izq LIST_PARAMETROS parentesis_der
-    | parentesis_izq parentesis_der
+    : parentesis_izq LIST_PARAMETROS parentesis_der {$$ = $2;}
+    | parentesis_izq parentesis_der {$$ = [];}
 ;
 
-LIST_PARAMETROS
-    : TYPE_DATA identificador
-    | TYPE_DATA identificador coma LIST_PARAMETROS
+LIST_PARAMETROS 
+    : LIST_PARAMETROS coma PARAMETROS   {$1.push($3); $$ = $1;}
+    | PARAMETROS    {$$ = [$1];}
+;
+
+PARAMETROS
+    : TYPE_DATA identificador   {$$ = $2}
 ;
 
 BLOCK_SENTENCIAS
@@ -234,7 +241,7 @@ SENTENCIAS
     : DECLARATION punto_y_coma
     | ASIGNATION punto_y_coma
     | OTHERS_ASIGNATIONS punto_y_coma
-    | identificador BLOCK_PARAMETROS punto_y_coma
+    | identificador BLOCK_PARAMETROS_PRIMITIVOS punto_y_coma   {$$ = new Identifier($1, $2, Type_Operation.LLAMADA_METODO, true, this._$.first_column);}
     | FOR
     | WHILE
     | DO_WHILE
@@ -243,6 +250,15 @@ SENTENCIAS
     | PRINT
 ;
 
+BLOCK_PARAMETROS_PRIMITIVOS
+    : parentesis_izq LIST_PARAMETROS_PRIMITIVOS parentesis_der {$$ = $2;}
+    | parentesis_izq parentesis_der {$$ = [];}
+;
+
+LIST_PARAMETROS_PRIMITIVOS
+    : LIST_PARAMETROS_PRIMITIVOS coma PRIMITIVOS {$1.push($3); $$ = $1;}
+    | PRIMITIVOS    {$$ = [$1];}
+;
 /******************************************************************************************************************/
 
 FOR
@@ -303,11 +319,11 @@ PRINT
 /******************************************************************************************************************/
 
 EXPRESION
-	: EXPRESION s_mas EXPRESION               { $$ = `${$1} + ${$3}`; }
-    | EXPRESION s_menos EXPRESION             { $$ = `${$1} - ${$3}`; }
-    | EXPRESION s_por EXPRESION               { $$ = `${$1} * ${$3}`; }
-    | EXPRESION s_division EXPRESION               { $$ = `${$1} / ${$3}`; }
-    | s_menos EXPRESION %prec UMENOS	        { $$ = `- ${$2}`; }
+	: EXPRESION s_mas EXPRESION                     {$$ = new Aritmetica($1, Type_Operation.SUMA, $3); }
+    | EXPRESION s_menos EXPRESION                   {$$ = new Aritmetica($1, Type_Operation.RESTA, $3); }
+    | EXPRESION s_por EXPRESION                     {$$ = new Aritmetica($1, Type_Operation.MULTIPLICACION, $3); }
+    | EXPRESION s_division EXPRESION                {$$ = new Aritmetica($1, Type_Operation.DIVISION, $3); }
+    | s_menos EXPRESION %prec UMENOS	            {$$ = new Aritmetica($2, Type_Operation.MENOS_UNARIO, null); }
     | EXPRESION s_AND EXPRESION               { $$ = `${$1} && ${$3}`; }
     | EXPRESION s_OR EXPRESION                { $$ = `${$1} || ${$3}`; }
     | EXPRESION s_XOR EXPRESION                { $$ = `${$1} || ${$3}`; }
@@ -321,16 +337,19 @@ EXPRESION
     | EXPRESION s_pos_decremento
 
     | s_NOT EXPRESION %prec UNOT              { $$ = `! ${$2}`; }
-    | parentesis_izq EXPRESION parentesis_der                   { $$ = `( ${$2} )`; }
-    | numero_entero                                { $$ = `${$1}`; }
-    | numero_decimal                               { $$ = `${$1}`; }
-    | cadena_char                              { $$ = `${$1}`; }
-    | cadena_string                                { $$ = `${$1}`; }
-    | r_true                                 { $$ = `verdadero` }
-    | r_false                                { $$ = `falso` }
-    | identificador                      { $$ = $1 }
-    | identificador BLOCK_PARAMETROS
+    | parentesis_izq EXPRESION parentesis_der       {$$ = new Aritmetica($2, Type_Operation.PARENTESIS, null); }
+    | identificador BLOCK_PARAMETROS_PRIMITIVOS     {$$ = new Identifier($1, $2, Type_Operation.LLAMADA_METODO,false, this._$.first_column); }
+    | PRIMITIVOS                                    {$$ = $1}
 ;
 
+PRIMITIVOS
+    : numero_entero                                 {$$ = new Primitivo($1); }
+    | numero_decimal                                {$$ = new Primitivo($1); }
+    | cadena_char                                   {$$ = new Primitivo($1); }
+    | cadena_string                                 {$$ = new Primitivo($1); }
+    | r_true                                        {$$ = new Primitivo($1); }
+    | r_false                                       {$$ = new Primitivo($1); }
+    | identificador                                 {$$ = new Identifier($1, null, Type_Operation.IDENTIFICADOR, false, this._$.first_column); }
+;
 /******************************************************************************************************************/
 /******************************************************************************************************************/
