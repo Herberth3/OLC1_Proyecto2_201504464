@@ -1,6 +1,6 @@
 import { Template_Instruccion } from "../template_Instruccion";
 
-export class Class_Interface extends Template_Instruccion{
+export class Class_Interface extends Template_Instruccion {
     modificador: string;
     tipo: string;
     identificador: string;
@@ -14,7 +14,7 @@ export class Class_Interface extends Template_Instruccion{
      * @param columna Columna donde se declara la clase o interface.
      */
 
-    constructor(modificador:string, tipo: string, id: string, declaraciones_g: Array<Template_Instruccion>, columna: number){
+    constructor(modificador: string, tipo: string, id: string, declaraciones_g: Array<Template_Instruccion>, columna: number) {
         super(columna);
         this.modificador = modificador;
         this.tipo = tipo;
@@ -24,20 +24,25 @@ export class Class_Interface extends Template_Instruccion{
 
     traductorJS(): string {
 
-        let declaration_gJS:string = this.calcularEspaciadoJS();
-        declaration_gJS += this.tipo + " " + this.identificador + " {\n";
+        if (this.tipo == "class") {
+            let declaration_gJS: string = this.calcularEspaciadoJS();
+            declaration_gJS += this.tipo + " " + this.identificador + " {\n";
+            declaration_gJS += "   " + "constructor(){\n   }\n\n";
 
-        this.declaraciones_globales.forEach(element => {
-            declaration_gJS += element.traductorJS();
-        });
-        return declaration_gJS + "}";
+            this.declaraciones_globales.forEach(element => {
+                declaration_gJS += element.traductorJS();
+            });
+            return declaration_gJS + "}";
+        }
+
+        return "";
     }
 
     calcularEspaciadoJS(): string {
 
-        let espacios:string = "";
+        let espacios: string = "";
 
-        let i:number = 1;
+        let i: number = 1;
         while (i < this.columna) {
             espacios += " ";
             i++;
@@ -45,5 +50,5 @@ export class Class_Interface extends Template_Instruccion{
 
         return espacios;
     }
-    
+
 }

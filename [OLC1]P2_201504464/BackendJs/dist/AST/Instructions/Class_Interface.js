@@ -17,12 +17,16 @@ class Class_Interface extends template_Instruccion_1.Template_Instruccion {
         this.declaraciones_globales = declaraciones_g;
     }
     traductorJS() {
-        let declaration_gJS = this.calcularEspaciadoJS();
-        declaration_gJS += this.tipo + " " + this.identificador + " {\n";
-        this.declaraciones_globales.forEach(element => {
-            declaration_gJS += element.traductorJS();
-        });
-        return declaration_gJS + "}";
+        if (this.tipo == "class") {
+            let declaration_gJS = this.calcularEspaciadoJS();
+            declaration_gJS += this.tipo + " " + this.identificador + " {\n";
+            declaration_gJS += "   " + "constructor(){\n   }\n\n";
+            this.declaraciones_globales.forEach(element => {
+                declaration_gJS += element.traductorJS();
+            });
+            return declaration_gJS + "}";
+        }
+        return "";
     }
     calcularEspaciadoJS() {
         let espacios = "";
