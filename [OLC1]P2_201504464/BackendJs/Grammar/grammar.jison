@@ -11,6 +11,8 @@
     const { Primitivo } = require('../dist/AST/Expressions/Primitivo');
     const { Relacional } = require('../dist/AST/Expressions/Relacional');
     const { Logica } = require('../dist/AST/Expressions/Logica');
+    const { Return_Continue_Break } = require('../dist/AST/Sentences/Return_Continue_Break');
+    const { For } = require('../dist/AST/Sentences/For');
 %}
 
 /* Definición Léxica */
@@ -246,11 +248,11 @@ SENTENCIAS
     | ASIGNATION punto_y_coma                                   {$$ = $1; }
     | OTHERS_ASIGNATIONS punto_y_coma                           {$$ = $1; }
     | identificador BLOCK_PARAMETROS_PRIMITIVOS punto_y_coma    {$$ = new Identifier($1, $2, Type_Operation.LLAMADA_METODO, true, this._$.first_column);}
-    | FOR
+    | FOR                                                       {$$ = $1; }
     | WHILE
     | DO_WHILE
     | IF
-    | RETURN
+    | RETURN                                                    {$$ = $1; }
     | PRINT
 ;
 
@@ -266,24 +268,24 @@ LIST_PARAMETROS_PRIMITIVOS
 /******************************************************************************************************************/
 
 FOR
-    : r_for parentesis_izq DECLARATION punto_y_coma EXPRESION punto_y_coma EXPRESION parentesis_der BLOCK_CYCLE
+    : r_for parentesis_izq DECLARATION punto_y_coma EXPRESION punto_y_coma EXPRESION parentesis_der BLOCK_CYCLE {$$ = new For($3, $5, $7, $9, this._$.first_column); }
 ;
 
 BLOCK_CYCLE
-    : llave_izq LIST_BLOQUE_CICLO llave_der
-    | llave_izq llave_der
+    : llave_izq LIST_BLOQUE_CICLO llave_der {$$ = $2; }
+    | llave_izq llave_der                   {$$ = []; }
 ;
 
 LIST_BLOQUE_CICLO
-    : LIST_BLOQUE_CICLO SENTENCIAS_CICLO
-    | SENTENCIAS_CICLO
+    : LIST_BLOQUE_CICLO SENTENCIAS_CICLO    {$1.push($2); $$ = $1; }
+    | SENTENCIAS_CICLO                      {$$ = [$1]; }
     | error punto_y_coma { console.error('Este es un error SINTACTICO en Bloque ciclo ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column); }
 ;
 
 SENTENCIAS_CICLO
-    : SENTENCIAS
-    | r_break punto_y_coma
-    | r_continue punto_y_coma
+    : SENTENCIAS                {$$ = $1; }
+    | r_break punto_y_coma      {$$ = new Return_Continue_Break($1, null, false, this._$.first_column); }
+    | r_continue punto_y_coma   {$$ = new Return_Continue_Break($1, null, false, this._$.first_column); }
 ;
 
 /******************************************************************************************************************/
@@ -309,8 +311,8 @@ IF
 /******************************************************************************************************************/
 
 RETURN
-    : r_return EXPRESION punto_y_coma
-    | r_return punto_y_coma
+    : r_return EXPRESION punto_y_coma   {$$ = new Return_Continue_Break($1, $2, true, this._$.first_column); }
+    | r_return punto_y_coma             {$$ = new Return_Continue_Break($1, null, false, this._$.first_column); }
 ;
 
 /******************************************************************************************************************/
