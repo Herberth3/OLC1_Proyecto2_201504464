@@ -14,6 +14,7 @@
     const { Return_Continue_Break } = require('../dist/AST/Sentences/Return_Continue_Break');
     const { For } = require('../dist/AST/Sentences/For');
     const { While } = require('../dist/AST/Sentences/While');
+    const { Do_While } = require('../dist/AST/Sentences/Do_While');
 %}
 
 /* Definición Léxica */
@@ -251,7 +252,7 @@ SENTENCIAS
     | identificador BLOCK_PARAMETROS_PRIMITIVOS punto_y_coma    {$$ = new Identifier($1, $2, Type_Operation.LLAMADA_METODO, true, this._$.first_column);}
     | FOR                                                       {$$ = $1; }
     | WHILE                                                     {$$ = $1; }
-    | DO_WHILE
+    | DO_WHILE                                                  {$$ = $1; }
     | IF
     | RETURN                                                    {$$ = $1; }
     | PRINT
@@ -298,7 +299,7 @@ WHILE
 /******************************************************************************************************************/
 
 DO_WHILE
-    : r_do BLOCK_CYCLE r_while parentesis_izq EXPRESION parentesis_der punto_y_coma
+    : r_do BLOCK_CYCLE r_while parentesis_izq EXPRESION parentesis_der punto_y_coma {$$ = new Do_While($2, $5, this._$.first_column); }
 ;
 
 /******************************************************************************************************************/
