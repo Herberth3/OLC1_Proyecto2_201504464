@@ -15,6 +15,7 @@
     const { For } = require('../dist/AST/Sentences/For');
     const { While } = require('../dist/AST/Sentences/While');
     const { Do_While } = require('../dist/AST/Sentences/Do_While');
+    const { If } = require('../dist/AST/Sentences/If');
 %}
 
 /* Definición Léxica */
@@ -253,7 +254,7 @@ SENTENCIAS
     | FOR                                                       {$$ = $1; }
     | WHILE                                                     {$$ = $1; }
     | DO_WHILE                                                  {$$ = $1; }
-    | IF
+    | IF                                                        {$$ = $1; }
     | RETURN                                                    {$$ = $1; }
     | PRINT
 ;
@@ -305,9 +306,15 @@ DO_WHILE
 /******************************************************************************************************************/
 
 IF
-    : r_if parentesis_izq EXPRESION parentesis_der BLOCK_CYCLE							{ $$ = `si ( ${$3} ) \n${$5}`; }
-    | r_if parentesis_izq EXPRESION parentesis_der BLOCK_CYCLE r_else BLOCK_CYCLE	{ $$ = `si ( ${$3} ) \n${$5}sino \n${$7}`; }
-    | r_if parentesis_izq EXPRESION parentesis_der BLOCK_CYCLE r_else IF
+    : r_if parentesis_izq EXPRESION parentesis_der BLOCK_CYCLE							{$$ = new If($3, $5, false, null, false, null, true, this._$.first_column); }
+    | r_if parentesis_izq EXPRESION parentesis_der BLOCK_CYCLE r_else BLOCK_CYCLE       {$$ = new If($3, $5, true, $7, false, null, true, this._$.first_column); }
+    | r_if parentesis_izq EXPRESION parentesis_der BLOCK_CYCLE r_else IF_N              {$$ = new If($3, $5, false, null, true, $7, true, this._$.first_column); }
+;
+
+IF_N
+    : r_if parentesis_izq EXPRESION parentesis_der BLOCK_CYCLE							{$$ = new If($3, $5, false, null, false, null, false, this._$.first_column); }
+    | r_if parentesis_izq EXPRESION parentesis_der BLOCK_CYCLE r_else BLOCK_CYCLE       {$$ = new If($3, $5, true, $7, false, null, false, this._$.first_column); }
+    | r_if parentesis_izq EXPRESION parentesis_der BLOCK_CYCLE r_else IF_N              {$$ = new If($3, $5, false, null, true, $7, false, this._$.first_column); }
 ;
 
 /******************************************************************************************************************/
