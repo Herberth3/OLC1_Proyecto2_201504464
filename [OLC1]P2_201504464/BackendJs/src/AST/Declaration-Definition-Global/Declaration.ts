@@ -30,7 +30,7 @@ export class Declaration extends Template_Instruccion{
             }
         }
 
-        return id_AsignationJS + ";\n";
+        return id_AsignationJS + ";\n\n";
     }
 
     calcularEspaciadoJS(): string {

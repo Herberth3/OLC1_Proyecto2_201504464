@@ -43,7 +43,7 @@ export class Identifier extends Template_Instruccion {
                             llamada_M += element.traductorJS() + ", ";
                         }
                     }
-                    llamada_M += ");\n";
+                    llamada_M += ");\n\n";
                 } else {
                     llamada_M = this.identificador + "(";
 
@@ -60,9 +60,9 @@ export class Identifier extends Template_Instruccion {
                 }
                 return llamada_M;
             case Type_Operation.POS_DECREMENTO:
-                return this.calcularEspaciadoJS() + this.identificador + "--;\n";
+                return this.calcularEspaciadoJS() + this.identificador + "--;\n\n";
             case Type_Operation.POS_INCREMENTO:
-                return this.calcularEspaciadoJS() + this.identificador + "++;\n";
+                return this.calcularEspaciadoJS() + this.identificador + "++;\n\n";
         }
 
     }

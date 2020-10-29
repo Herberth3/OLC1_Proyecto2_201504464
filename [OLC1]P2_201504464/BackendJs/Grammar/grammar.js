@@ -90,65 +90,74 @@ case 1:
 		return ast;
 	
 break;
-case 2: case 11: case 18:
-$$[$0-1].push($$[$0]); this.$ = $$[$0-1];
+case 2: case 11: case 18: case 46:
+$$[$0-1].push($$[$0]); this.$ = $$[$0-1]; 
 break;
-case 3: case 12: case 19: case 29: case 42: case 62:
-this.$ = [$$[$0]];
+case 3: case 12: case 19: case 29: case 42: case 47: case 62:
+this.$ = [$$[$0]]; 
 break;
 case 4:
  console.error('Este es un error SINTACTICO en Instrucciones: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column); 
 break;
 case 5: case 6:
-this.$ = new Class_Interface($$[$0-3], $$[$0-2], $$[$0-1], $$[$0], this._$.first_column);
+this.$ = new Class_Interface($$[$0-3], $$[$0-2], $$[$0-1], $$[$0], this._$.first_column); 
 break;
-case 7: case 9: case 14: case 15: case 39: case 59:
-this.$ = $$[$0-1];
+case 7: case 9: case 14: case 15: case 16: case 39: case 44: case 49: case 50: case 51: case 59:
+this.$ = $$[$0-1]; 
 break;
-case 8: case 10: case 40: case 60:
-this.$ = [];
+case 8: case 10: case 40: case 45: case 60:
+this.$ = []; 
 break;
 case 13:
- console.error('Este es un error SINTACTICO en Declaraciones globales: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column) 
+ console.error('Este es un error SINTACTICO en Declaraciones globales: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column); 
+break;
+case 17: case 23: case 24: case 25: case 26: case 27: case 37: case 38:
+this.$ = $$[$0]; 
 break;
 case 20:
- console.error('Este es un error SINTACTICO en Definicion de funciones: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column) 
+ console.error('Este es un error SINTACTICO en Definicion de funciones: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column); 
+break;
+case 21:
+this.$ = new Method($$[$0-4], $$[$0-3], $$[$0-2], $$[$0-1], null, this._$.first_column); 
 break;
 case 22:
-this.$ = new Declaration($$[$0-1], $$[$0], this._$.first_column);
-break;
-case 23: case 24: case 25: case 26: case 27:
-this.$ = $$[$0];
+this.$ = new Declaration($$[$0-1], $$[$0], this._$.first_column); 
 break;
 case 28: case 41: case 61:
-$$[$0-2].push($$[$0]); this.$ = $$[$0-2];
+$$[$0-2].push($$[$0]); this.$ = $$[$0-2]; 
 break;
 case 30:
-this.$ = new Identifier($$[$0], null, Type_Operation.IDENTIFICADOR, false, this._$.first_column);
+this.$ = new Identifier($$[$0], null, Type_Operation.IDENTIFICADOR, false, 1); 
 break;
 case 31:
-this.$ = new Asignation($$[$0-2], $$[$0], false, 1);
+this.$ = new Asignation($$[$0-2], $$[$0], false, 1); 
 break;
 case 32:
-this.$ = new Asignation($$[$0-2], $$[$0], true, this._$.first_column);
+this.$ = new Asignation($$[$0-2], $$[$0], true, this._$.first_column); 
 break;
 case 33:
-this.$ = new Identifier($$[$0-1], null, Type_Operation.POS_INCREMENTO, false, this._$.first_column);
+this.$ = new Identifier($$[$0-1], null, Type_Operation.POS_INCREMENTO, false, this._$.first_column); 
 break;
 case 34:
-this.$ = new Identifier($$[$0-1], null, Type_Operation.POS_DECREMENTO, false, this._$.first_column);
+this.$ = new Identifier($$[$0-1], null, Type_Operation.POS_DECREMENTO, false, this._$.first_column); 
 break;
-case 43: case 100:
-this.$ = $$[$0]
+case 35:
+this.$ = new Method($$[$0-10], $$[$0-8], $$[$0-7], null, $$[$0], this._$.first_column); 
+break;
+case 36:
+this.$ = new Method($$[$0-4], $$[$0-3], $$[$0-2], $$[$0-1], $$[$0], this._$.first_column); 
+break;
+case 43:
+this.$ = new Parameter($$[$0-1], $$[$0]); 
 break;
 case 48:
- console.error('Este es un error SINTACTICO en Sentencias: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column) 
+ console.error('Este es un error SINTACTICO en Sentencias: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column); 
 break;
 case 52:
 this.$ = new Identifier($$[$0-2], $$[$0-1], Type_Operation.LLAMADA_METODO, true, this._$.first_column);
 break;
 case 68:
- console.error('Este es un error SINTACTICO en Bloque ciclo ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column) 
+ console.error('Este es un error SINTACTICO en Bloque ciclo ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column); 
 break;
 case 74:
  this.$ = `si ( ${$$[$0-2]} ) \n${$$[$0]}`; 
@@ -212,6 +221,9 @@ this.$ = new Aritmetica($$[$0-1], Type_Operation.PARENTESIS, null);
 break;
 case 99:
 this.$ = new Identifier($$[$0-1], $$[$0], Type_Operation.LLAMADA_METODO,false, this._$.first_column); 
+break;
+case 100:
+this.$ = $$[$0]
 break;
 case 101: case 102: case 103: case 104: case 105: case 106:
 this.$ = new Primitivo($$[$0]); 
@@ -476,6 +488,8 @@ _handle_error:
     const { Declaration } = require('../dist/AST/Declaration-Definition-Global/Declaration');
     const { Identifier } = require('../dist/AST/Declaration-Definition-Global/Identifier');
     const { Asignation } = require('../dist/AST/Declaration-Definition-Global/Asignation');
+    const { Method } = require('../dist/AST/Declaration-Definition-Global/Method');
+    const { Parameter } = require('../dist/AST/Declaration-Definition-Global/Parameter');
     const { Type_Operation } = require('../dist/AST/Types');
     const { Aritmetica } = require('../dist/AST/Expressions/Aritmetica');
     const { Primitivo } = require('../dist/AST/Expressions/Primitivo');

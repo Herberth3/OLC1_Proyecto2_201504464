@@ -24,7 +24,7 @@ class Declaration extends template_Instruccion_1.Template_Instruccion {
                 id_AsignationJS += element.traductorJS() + ", ";
             }
         }
-        return id_AsignationJS + ";\n";
+        return id_AsignationJS + ";\n\n";
     }
     calcularEspaciadoJS() {
         let espacios = "";

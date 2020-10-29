@@ -4,6 +4,8 @@
     const { Declaration } = require('../dist/AST/Declaration-Definition-Global/Declaration');
     const { Identifier } = require('../dist/AST/Declaration-Definition-Global/Identifier');
     const { Asignation } = require('../dist/AST/Declaration-Definition-Global/Asignation');
+    const { Method } = require('../dist/AST/Declaration-Definition-Global/Method');
+    const { Parameter } = require('../dist/AST/Declaration-Definition-Global/Parameter');
     const { Type_Operation } = require('../dist/AST/Types');
     const { Aritmetica } = require('../dist/AST/Expressions/Aritmetica');
     const { Primitivo } = require('../dist/AST/Expressions/Primitivo');
@@ -118,132 +120,132 @@ INICIO
 ;
 
 LIST_INSTRUCTIONS
-    : LIST_INSTRUCTIONS INSTRUCTIONS    {$1.push($2); $$ = $1;}
-    | INSTRUCTIONS  {$$ = [$1];}
+    : LIST_INSTRUCTIONS INSTRUCTIONS    {$1.push($2); $$ = $1; }
+    | INSTRUCTIONS                      {$$ = [$1]; }
     | error { console.error('Este es un error SINTACTICO en Instrucciones: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column); }
 ;
 
 INSTRUCTIONS
-    : r_public r_class identificador BLOCK_DECLARATION_GLOBAL   {$$ = new Class_Interface($1, $2, $3, $4, this._$.first_column);}
-    | r_public r_interface identificador BLOCK_DEFINITION_FUNCTIONS {$$ = new Class_Interface($1, $2, $3, $4, this._$.first_column);}
+    : r_public r_class identificador BLOCK_DECLARATION_GLOBAL       {$$ = new Class_Interface($1, $2, $3, $4, this._$.first_column); }
+    | r_public r_interface identificador BLOCK_DEFINITION_FUNCTIONS {$$ = new Class_Interface($1, $2, $3, $4, this._$.first_column); }
 ;
 
 BLOCK_DECLARATION_GLOBAL
-    : llave_izq LIST_DECLARATION_GLOBAL llave_der   {$$ = $2;}
-    | llave_izq llave_der   {$$ = [];}
+    : llave_izq LIST_DECLARATION_GLOBAL llave_der   {$$ = $2; }
+    | llave_izq llave_der                           {$$ = []; }
 ;
 
 BLOCK_DEFINITION_FUNCTIONS
-    : llave_izq LIST_DEFINITION_FUNCTIONS llave_der {$$ = $2;}
-    | llave_izq llave_der   {$$ = [];}
+    : llave_izq LIST_DEFINITION_FUNCTIONS llave_der {$$ = $2; }
+    | llave_izq llave_der                           {$$ = []; }
 ;
 
 /******************************************************************************************************************/
 
 LIST_DECLARATION_GLOBAL
-    : LIST_DECLARATION_GLOBAL DECLARATION_GLOBAL    {$1.push($2); $$ = $1;}
-    | DECLARATION_GLOBAL    {$$ = [$1];}
-    | error { console.error('Este es un error SINTACTICO en Declaraciones globales: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column) }
+    : LIST_DECLARATION_GLOBAL DECLARATION_GLOBAL    {$1.push($2); $$ = $1; }
+    | DECLARATION_GLOBAL                            {$$ = [$1]; }
+    | error { console.error('Este es un error SINTACTICO en Declaraciones globales: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column); }
 ;
 
 DECLARATION_GLOBAL
-    : DECLARATION punto_y_coma  {$$ = $1;}
-    | ASIGNATION punto_y_coma   {$$ = $1;}
-    | OTHERS_ASIGNATIONS punto_y_coma
-    | METHOD
+    : DECLARATION punto_y_coma          {$$ = $1; }
+    | ASIGNATION punto_y_coma           {$$ = $1; }
+    | OTHERS_ASIGNATIONS punto_y_coma   {$$ = $1; }
+    | METHOD                            {$$ = $1; }
 ;
 
 LIST_DEFINITION_FUNCTIONS
-    : LIST_DEFINITION_FUNCTIONS DEFINITION_FUNCTIONS    {$1.push($2); $$ = $1;}
-    | DEFINITION_FUNCTIONS  {$$ = [$1];}
-    | error { console.error('Este es un error SINTACTICO en Definicion de funciones: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column) }
+    : LIST_DEFINITION_FUNCTIONS DEFINITION_FUNCTIONS    {$1.push($2); $$ = $1; }
+    | DEFINITION_FUNCTIONS                              {$$ = [$1]; }
+    | error { console.error('Este es un error SINTACTICO en Definicion de funciones: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column); }
 ;
 
 DEFINITION_FUNCTIONS
-    : r_public TYPE_METHOD identificador BLOCK_PARAMETROS punto_y_coma
+    : r_public TYPE_METHOD identificador BLOCK_PARAMETROS punto_y_coma  {$$ = new Method($1, $2, $3, $4, null, this._$.first_column); }
 ;
 
 /******************************************************************************************************************/
 
 DECLARATION
-    : TYPE_DATA LIST_DECLA_ASIGN    {$$ = new Declaration($1, $2, this._$.first_column);}
+    : TYPE_DATA LIST_DECLA_ASIGN    {$$ = new Declaration($1, $2, this._$.first_column); }
 ;
 
 TYPE_DATA
-    : r_int {$$ = $1;}
-    | r_boolean {$$ = $1;}
-    | r_double  {$$ = $1;}
-    | r_String  {$$ = $1;}
-    | r_char    {$$ = $1;}
+    : r_int     {$$ = $1; }
+    | r_boolean {$$ = $1; }
+    | r_double  {$$ = $1; }
+    | r_String  {$$ = $1; }
+    | r_char    {$$ = $1; }
 ;
 
 LIST_DECLA_ASIGN
-    : LIST_DECLA_ASIGN coma DECLA_ASIGN {$1.push($3); $$ = $1;}
-    | DECLA_ASIGN   {$$ = [$1];}
+    : LIST_DECLA_ASIGN coma DECLA_ASIGN {$1.push($3); $$ = $1; }
+    | DECLA_ASIGN                       {$$ = [$1]; }
 ;
 
 DECLA_ASIGN
-    : identificador {$$ = new Identifier($1, null, Type_Operation.IDENTIFICADOR, false, this._$.first_column);}
-    | identificador s_igual EXPRESION   {$$ = new Asignation($1, $3, false, 1);}
+    : identificador                     {$$ = new Identifier($1, null, Type_Operation.IDENTIFICADOR, false, 1); }
+    | identificador s_igual EXPRESION   {$$ = new Asignation($1, $3, false, 1); }
 ;
 
 /******************************************************************************************************************/
 
 ASIGNATION
-    : identificador s_igual EXPRESION   {$$ = new Asignation($1, $3, true, this._$.first_column);}
+    : identificador s_igual EXPRESION   {$$ = new Asignation($1, $3, true, this._$.first_column); }
 ;
 
 /******************************************************************************************************************/
 
 OTHERS_ASIGNATIONS
-    : identificador s_pos_incremento    {$$ = new Identifier($1, null, Type_Operation.POS_INCREMENTO, false, this._$.first_column);}
-    | identificador s_pos_decremento    {$$ = new Identifier($1, null, Type_Operation.POS_DECREMENTO, false, this._$.first_column);}
+    : identificador s_pos_incremento    {$$ = new Identifier($1, null, Type_Operation.POS_INCREMENTO, false, this._$.first_column); }
+    | identificador s_pos_decremento    {$$ = new Identifier($1, null, Type_Operation.POS_DECREMENTO, false, this._$.first_column); }
 ;
 
 /******************************************************************************************************************/
 
 METHOD
-    : r_public r_static r_void r_main parentesis_izq r_String corchete_izq corchete_der r_args parentesis_der BLOCK_SENTENCIAS
-    | r_public TYPE_METHOD identificador BLOCK_PARAMETROS BLOCK_SENTENCIAS
+    : r_public r_static r_void r_main parentesis_izq r_String corchete_izq corchete_der r_args parentesis_der BLOCK_SENTENCIAS  {$$ = new Method($1, $3, $4, null, $11, this._$.first_column); }
+    | r_public TYPE_METHOD identificador BLOCK_PARAMETROS BLOCK_SENTENCIAS                                                      {$$ = new Method($1, $2, $3, $4, $5, this._$.first_column); }
 ;
 
 TYPE_METHOD
-    : r_void
-    | TYPE_DATA
+    : r_void        {$$ = $1; }
+    | TYPE_DATA     {$$ = $1; }
 ;
 
 BLOCK_PARAMETROS
-    : parentesis_izq LIST_PARAMETROS parentesis_der {$$ = $2;}
-    | parentesis_izq parentesis_der {$$ = [];}
+    : parentesis_izq LIST_PARAMETROS parentesis_der {$$ = $2; }
+    | parentesis_izq parentesis_der                 {$$ = []; }
 ;
 
 LIST_PARAMETROS 
-    : LIST_PARAMETROS coma PARAMETROS   {$1.push($3); $$ = $1;}
-    | PARAMETROS    {$$ = [$1];}
+    : LIST_PARAMETROS coma PARAMETROS   {$1.push($3); $$ = $1; }
+    | PARAMETROS                        {$$ = [$1]; }
 ;
 
 PARAMETROS
-    : TYPE_DATA identificador   {$$ = $2}
+    : TYPE_DATA identificador   {$$ = new Parameter($1, $2); }
 ;
 
 BLOCK_SENTENCIAS
-    : llave_izq LIST_SENTENCIAS llave_der
-    | llave_izq llave_der
+    : llave_izq LIST_SENTENCIAS llave_der   {$$ = $2; }
+    | llave_izq llave_der                   {$$ = []; }
 ;
 
 /******************************************************************************************************************/
 
 LIST_SENTENCIAS
-    : LIST_SENTENCIAS SENTENCIAS
-    | SENTENCIAS
-    | error { console.error('Este es un error SINTACTICO en Sentencias: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column) }
+    : LIST_SENTENCIAS SENTENCIAS    {$1.push($2); $$ = $1; }
+    | SENTENCIAS                    {$$ = [$1]; }
+    | error { console.error('Este es un error SINTACTICO en Sentencias: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column); }
 ;
 
 SENTENCIAS
-    : DECLARATION punto_y_coma
-    | ASIGNATION punto_y_coma
-    | OTHERS_ASIGNATIONS punto_y_coma
-    | identificador BLOCK_PARAMETROS_PRIMITIVOS punto_y_coma   {$$ = new Identifier($1, $2, Type_Operation.LLAMADA_METODO, true, this._$.first_column);}
+    : DECLARATION punto_y_coma                                  {$$ = $1; }
+    | ASIGNATION punto_y_coma                                   {$$ = $1; }
+    | OTHERS_ASIGNATIONS punto_y_coma                           {$$ = $1; }
+    | identificador BLOCK_PARAMETROS_PRIMITIVOS punto_y_coma    {$$ = new Identifier($1, $2, Type_Operation.LLAMADA_METODO, true, this._$.first_column);}
     | FOR
     | WHILE
     | DO_WHILE
@@ -253,13 +255,13 @@ SENTENCIAS
 ;
 
 BLOCK_PARAMETROS_PRIMITIVOS
-    : parentesis_izq LIST_PARAMETROS_PRIMITIVOS parentesis_der {$$ = $2;}
-    | parentesis_izq parentesis_der {$$ = [];}
+    : parentesis_izq LIST_PARAMETROS_PRIMITIVOS parentesis_der  {$$ = $2; }
+    | parentesis_izq parentesis_der                             {$$ = []; }
 ;
 
 LIST_PARAMETROS_PRIMITIVOS
-    : LIST_PARAMETROS_PRIMITIVOS coma PRIMITIVOS {$1.push($3); $$ = $1;}
-    | PRIMITIVOS    {$$ = [$1];}
+    : LIST_PARAMETROS_PRIMITIVOS coma PRIMITIVOS    {$1.push($3); $$ = $1; }
+    | PRIMITIVOS                                    {$$ = [$1]; }
 ;
 /******************************************************************************************************************/
 
@@ -275,7 +277,7 @@ BLOCK_CYCLE
 LIST_BLOQUE_CICLO
     : LIST_BLOQUE_CICLO SENTENCIAS_CICLO
     | SENTENCIAS_CICLO
-    | error punto_y_coma { console.error('Este es un error SINTACTICO en Bloque ciclo ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column) }
+    | error punto_y_coma { console.error('Este es un error SINTACTICO en Bloque ciclo ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column); }
 ;
 
 SENTENCIAS_CICLO

@@ -18,7 +18,7 @@ class Asignation extends template_Instruccion_1.Template_Instruccion {
     traductorJS() {
         let asignationJS = "";
         if (this.asignacion_Normal) {
-            asignationJS = this.calcularEspaciadoJS() + this.identificador + " = " + this.expresion.traductorJS() + ";\n";
+            asignationJS = this.calcularEspaciadoJS() + this.identificador + " = " + this.expresion.traductorJS() + ";\n\n";
         }
         else {
             asignationJS = this.identificador + " = " + this.expresion.traductorJS();

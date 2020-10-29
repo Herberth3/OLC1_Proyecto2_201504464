@@ -26,7 +26,7 @@ export class Asignation extends Template_Instruccion{
         let asignationJS:string = "";
 
         if (this.asignacion_Normal) {
-            asignationJS = this.calcularEspaciadoJS() + this.identificador + " = " + this.expresion.traductorJS() + ";\n";
+            asignationJS = this.calcularEspaciadoJS() + this.identificador + " = " + this.expresion.traductorJS() + ";\n\n";
         } else {
             asignationJS = this.identificador + " = " + this.expresion.traductorJS();
         }

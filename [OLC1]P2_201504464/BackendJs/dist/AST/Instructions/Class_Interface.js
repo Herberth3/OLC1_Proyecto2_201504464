@@ -7,6 +7,7 @@ class Class_Interface extends template_Instruccion_1.Template_Instruccion {
      * @param modificador Alcance de la clase o interface.
      * @param tipo Puede ser una clase o una interface.
      * @param id Nombre de la clase o interface.
+     * @param declaraciones_g Arreglo de declaraciones globales, declaraciones, asignaciones, metodos, incrementos, decrementos.
      * @param columna Columna donde se declara la clase o interface.
      */
     constructor(modificador, tipo, id, declaraciones_g, columna) {
@@ -24,7 +25,7 @@ class Class_Interface extends template_Instruccion_1.Template_Instruccion {
             this.declaraciones_globales.forEach(element => {
                 declaration_gJS += element.traductorJS();
             });
-            return declaration_gJS + "}";
+            return declaration_gJS + this.calcularEspaciadoJS() + "}";
         }
         return "";
     }
