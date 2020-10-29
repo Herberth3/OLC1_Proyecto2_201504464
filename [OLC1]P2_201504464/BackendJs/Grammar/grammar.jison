@@ -16,6 +16,7 @@
     const { While } = require('../dist/AST/Sentences/While');
     const { Do_While } = require('../dist/AST/Sentences/Do_While');
     const { If } = require('../dist/AST/Sentences/If');
+    const { Print } = require('../dist/AST/Sentences/Print');
 %}
 
 /* Definición Léxica */
@@ -256,7 +257,7 @@ SENTENCIAS
     | DO_WHILE                                                  {$$ = $1; }
     | IF                                                        {$$ = $1; }
     | RETURN                                                    {$$ = $1; }
-    | PRINT
+    | PRINT                                                     {$$ = $1; }
 ;
 
 BLOCK_PARAMETROS_PRIMITIVOS
@@ -327,8 +328,8 @@ RETURN
 /******************************************************************************************************************/
 
 PRINT
-    : r_System punto r_out punto r_println parentesis_izq EXPRESION parentesis_der punto_y_coma
-    | r_System punto r_out punto r_print parentesis_izq EXPRESION parentesis_der punto_y_coma
+    : r_System punto r_out punto r_println parentesis_izq EXPRESION parentesis_der punto_y_coma {$$ = new Print($7, this._$.first_column); }
+    | r_System punto r_out punto r_print parentesis_izq EXPRESION parentesis_der punto_y_coma   {$$ = new Print($7, this._$.first_column); }
 ;
 
 /******************************************************************************************************************/
