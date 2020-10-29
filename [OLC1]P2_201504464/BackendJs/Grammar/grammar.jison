@@ -13,6 +13,7 @@
     const { Logica } = require('../dist/AST/Expressions/Logica');
     const { Return_Continue_Break } = require('../dist/AST/Sentences/Return_Continue_Break');
     const { For } = require('../dist/AST/Sentences/For');
+    const { While } = require('../dist/AST/Sentences/While');
 %}
 
 /* Definición Léxica */
@@ -249,7 +250,7 @@ SENTENCIAS
     | OTHERS_ASIGNATIONS punto_y_coma                           {$$ = $1; }
     | identificador BLOCK_PARAMETROS_PRIMITIVOS punto_y_coma    {$$ = new Identifier($1, $2, Type_Operation.LLAMADA_METODO, true, this._$.first_column);}
     | FOR                                                       {$$ = $1; }
-    | WHILE
+    | WHILE                                                     {$$ = $1; }
     | DO_WHILE
     | IF
     | RETURN                                                    {$$ = $1; }
@@ -291,7 +292,7 @@ SENTENCIAS_CICLO
 /******************************************************************************************************************/
 
 WHILE
-    : r_while parentesis_izq EXPRESION parentesis_der BLOCK_CYCLE
+    : r_while parentesis_izq EXPRESION parentesis_der BLOCK_CYCLE   {$$ = new While($3, $5, this._$.first_column); }
 ;
 
 /******************************************************************************************************************/
