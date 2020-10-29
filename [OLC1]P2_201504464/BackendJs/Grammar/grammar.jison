@@ -7,6 +7,8 @@
     const { Type_Operation } = require('../dist/AST/Types');
     const { Aritmetica } = require('../dist/AST/Expressions/Aritmetica');
     const { Primitivo } = require('../dist/AST/Expressions/Primitivo');
+    const { Relacional } = require('../dist/AST/Expressions/Relacional');
+    const { Logica } = require('../dist/AST/Expressions/Logica');
 %}
 
 /* Definición Léxica */
@@ -324,20 +326,23 @@ EXPRESION
     | EXPRESION s_por EXPRESION                     {$$ = new Aritmetica($1, Type_Operation.MULTIPLICACION, $3); }
     | EXPRESION s_division EXPRESION                {$$ = new Aritmetica($1, Type_Operation.DIVISION, $3); }
     | s_menos EXPRESION %prec UMENOS	            {$$ = new Aritmetica($2, Type_Operation.MENOS_UNARIO, null); }
-    | EXPRESION s_AND EXPRESION               { $$ = `${$1} && ${$3}`; }
-    | EXPRESION s_OR EXPRESION                { $$ = `${$1} || ${$3}`; }
-    | EXPRESION s_XOR EXPRESION                { $$ = `${$1} || ${$3}`; }
-    | EXPRESION s_doble_igual EXPRESION        { $$ = `${$1} == ${$3}`; }
-    | EXPRESION s_diferente_de EXPRESION         { $$ = `${$1} != ${$3}`; }
-    | EXPRESION s_menor_que EXPRESION          { $$ = `${$1} < ${$3}`; }
-    | EXPRESION s_mayor_que EXPRESION          { $$ = `${$1} > ${$3}`; }
-    | EXPRESION s_menor_igual_que EXPRESION       { $$ = `${$1} <= ${$3}`; }
-    | EXPRESION s_mayor_igual_que EXPRESION       { $$ = `${$1} >= ${$3}`; }
-    | EXPRESION s_pos_incremento
-    | EXPRESION s_pos_decremento
 
-    | s_NOT EXPRESION %prec UNOT              { $$ = `! ${$2}`; }
+    | EXPRESION s_AND EXPRESION                     {$$ = new Logica($1, Type_Operation.AND, $3); }
+    | EXPRESION s_OR EXPRESION                      {$$ = new Logica($1, Type_Operation.OR, $3); }
+    | EXPRESION s_XOR EXPRESION                     {$$ = new Logica($1, Type_Operation.XOR, $3); }
+    | s_NOT EXPRESION %prec UNOT                    {$$ = new Logica($2, Type_Operation.NOT_UNARIO, null); }
+
+    | EXPRESION s_doble_igual EXPRESION             {$$ = new Relacional($1, Type_Operation.DOBLE_IGUAL, $3); }
+    | EXPRESION s_diferente_de EXPRESION            {$$ = new Relacional($1, Type_Operation.DIFERENTE_DE, $3); }
+    | EXPRESION s_menor_que EXPRESION               {$$ = new Relacional($1, Type_Operation.MENOR_QUE, $3); }
+    | EXPRESION s_mayor_que EXPRESION               {$$ = new Relacional($1, Type_Operation.MAYOR_QUE, $3); }
+    | EXPRESION s_menor_igual_que EXPRESION         {$$ = new Relacional($1, Type_Operation.MENOR_IGUAL_QUE, $3); }
+    | EXPRESION s_mayor_igual_que EXPRESION         {$$ = new Relacional($1, Type_Operation.MAYOR_IGUAL_QUE, $3); }
+
+    | EXPRESION s_pos_incremento                    {$$ = new Aritmetica($1, Type_Operation.POS_INCREMENTO, null); }
+    | EXPRESION s_pos_decremento                    {$$ = new Aritmetica($1, Type_Operation.POS_DECREMENTO, null); }
     | parentesis_izq EXPRESION parentesis_der       {$$ = new Aritmetica($2, Type_Operation.PARENTESIS, null); }
+
     | identificador BLOCK_PARAMETROS_PRIMITIVOS     {$$ = new Identifier($1, $2, Type_Operation.LLAMADA_METODO,false, this._$.first_column); }
     | PRIMITIVOS                                    {$$ = $1}
 ;
