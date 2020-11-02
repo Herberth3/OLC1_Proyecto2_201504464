@@ -1,7 +1,9 @@
+import { Template_Grafo } from "../Template_Grafo";
 import { Template_Instruccion } from "../template_Instruccion";
 import { Type_Operation } from "../Types";
 
 export class Identifier extends Template_Instruccion {
+
     identificador: string;
     parametros: Array<Template_Instruccion>;
     tipo_Ejecucion: Type_Operation;
@@ -77,5 +79,89 @@ export class Identifier extends Template_Instruccion {
         }
 
         return espacios;
+    }
+
+    recolectarDot(t_g: Template_Grafo): string {
+        let dot: string = "";
+        let esPrimero: boolean = true;
+        let nodoPadre_G: string = "nodo" + t_g.id_Nodo;
+        let nodoPadre_A: string = "";
+        let nodoHijo: string = "";
+
+        if (this.tipo_Ejecucion == Type_Operation.LLAMADA_METODO || this.tipo_Ejecucion == Type_Operation.POS_DECREMENTO
+            || this.tipo_Ejecucion == Type_Operation.POS_INCREMENTO) {
+
+            t_g.id_Nodo++;
+            nodoHijo = "nodo" + t_g.id_Nodo;
+            switch (this.tipo_Ejecucion) {
+                case Type_Operation.LLAMADA_METODO:
+                    dot += nodoHijo + "[label=\"LLAMADA_METODO\"]\n";
+                    break;
+                case Type_Operation.POS_DECREMENTO:
+                    dot += nodoHijo + "[label=\"POS_DECREMENTO\"]\n";
+                    break;
+                case Type_Operation.POS_INCREMENTO:
+                    dot += nodoHijo + "[label=\"POS_INCREMENTO\"]\n";
+                    break;
+            }
+            dot += nodoPadre_G + " -> " + nodoHijo + "\n";
+
+            /** AHORA EL NODOPADRE_G ES UNO DE LOS NODOS ANTERIORES **/
+            nodoPadre_G = nodoHijo;
+        }
+
+        switch (this.tipo_Ejecucion) {
+            case Type_Operation.IDENTIFICADOR:
+                dot += this.recolectorDotHijo(t_g, nodoPadre_G, this.identificador);
+                break;
+            case Type_Operation.LLAMADA_METODO:
+                dot += this.recolectorDotHijo(t_g, nodoPadre_G, this.identificador);
+
+                if (this.parametros.length > 0) {
+
+                    this.parametros.forEach(element => {
+
+                        t_g.id_Nodo++;
+                        nodoPadre_A = "nodo" + t_g.id_Nodo;
+                        dot += nodoPadre_A + "[label=\"LIST_PRIMITIVOS\"]\n";
+
+                        if (esPrimero) {
+                            dot += nodoPadre_G + " -> " + nodoPadre_A + "\n";
+                            esPrimero = false;
+                        } else {
+                            dot += nodoHijo + " -> " + nodoPadre_A + "\n";
+                        }
+
+                        dot += element.recolectarDot(t_g);
+
+                        nodoHijo = nodoPadre_A;
+                    });
+
+                }
+
+                break;
+            case Type_Operation.POS_DECREMENTO:
+                dot += this.recolectorDotHijo(t_g, nodoPadre_G, this.identificador);
+                dot += this.recolectorDotHijo(t_g, nodoPadre_G, "--");
+                break;
+            case Type_Operation.POS_INCREMENTO:
+                dot += this.recolectorDotHijo(t_g, nodoPadre_G, this.identificador);
+                dot += this.recolectorDotHijo(t_g, nodoPadre_G, "++");
+                break;
+        }
+
+        return dot;
+    }
+
+    recolectorDotHijo(t_g: Template_Grafo, nodoPadre_G: string, nombreHijo: string): string {
+        let dot: string = "";
+        let nodoHijo: string = "";
+
+        t_g.id_Nodo++;
+        nodoHijo = "nodo" + t_g.id_Nodo;
+        dot += nodoHijo + "[label=\"" + nombreHijo + "\"]\n";
+        dot += nodoPadre_G + " -> " + nodoHijo + "\n";
+
+        return dot;
     }
 }

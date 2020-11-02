@@ -66,5 +66,73 @@ class Identifier extends template_Instruccion_1.Template_Instruccion {
         }
         return espacios;
     }
+    recolectarDot(t_g) {
+        let dot = "";
+        let esPrimero = true;
+        let nodoPadre_G = "nodo" + t_g.id_Nodo;
+        let nodoPadre_A = "";
+        let nodoHijo = "";
+        if (this.tipo_Ejecucion == Types_1.Type_Operation.LLAMADA_METODO || this.tipo_Ejecucion == Types_1.Type_Operation.POS_DECREMENTO
+            || this.tipo_Ejecucion == Types_1.Type_Operation.POS_INCREMENTO) {
+            t_g.id_Nodo++;
+            nodoHijo = "nodo" + t_g.id_Nodo;
+            switch (this.tipo_Ejecucion) {
+                case Types_1.Type_Operation.LLAMADA_METODO:
+                    dot += nodoHijo + "[label=\"LLAMADA_METODO\"]\n";
+                    break;
+                case Types_1.Type_Operation.POS_DECREMENTO:
+                    dot += nodoHijo + "[label=\"POS_DECREMENTO\"]\n";
+                    break;
+                case Types_1.Type_Operation.POS_INCREMENTO:
+                    dot += nodoHijo + "[label=\"POS_INCREMENTO\"]\n";
+                    break;
+            }
+            dot += nodoPadre_G + " -> " + nodoHijo + "\n";
+            /** AHORA EL NODOPADRE_G ES UNO DE LOS NODOS ANTERIORES **/
+            nodoPadre_G = nodoHijo;
+        }
+        switch (this.tipo_Ejecucion) {
+            case Types_1.Type_Operation.IDENTIFICADOR:
+                dot += this.recolectorDotHijo(t_g, nodoPadre_G, this.identificador);
+                break;
+            case Types_1.Type_Operation.LLAMADA_METODO:
+                dot += this.recolectorDotHijo(t_g, nodoPadre_G, this.identificador);
+                if (this.parametros.length > 0) {
+                    this.parametros.forEach(element => {
+                        t_g.id_Nodo++;
+                        nodoPadre_A = "nodo" + t_g.id_Nodo;
+                        dot += nodoPadre_A + "[label=\"LIST_PRIMITIVOS\"]\n";
+                        if (esPrimero) {
+                            dot += nodoPadre_G + " -> " + nodoPadre_A + "\n";
+                            esPrimero = false;
+                        }
+                        else {
+                            dot += nodoHijo + " -> " + nodoPadre_A + "\n";
+                        }
+                        dot += element.recolectarDot(t_g);
+                        nodoHijo = nodoPadre_A;
+                    });
+                }
+                break;
+            case Types_1.Type_Operation.POS_DECREMENTO:
+                dot += this.recolectorDotHijo(t_g, nodoPadre_G, this.identificador);
+                dot += this.recolectorDotHijo(t_g, nodoPadre_G, "--");
+                break;
+            case Types_1.Type_Operation.POS_INCREMENTO:
+                dot += this.recolectorDotHijo(t_g, nodoPadre_G, this.identificador);
+                dot += this.recolectorDotHijo(t_g, nodoPadre_G, "++");
+                break;
+        }
+        return dot;
+    }
+    recolectorDotHijo(t_g, nodoPadre_G, nombreHijo) {
+        let dot = "";
+        let nodoHijo = "";
+        t_g.id_Nodo++;
+        nodoHijo = "nodo" + t_g.id_Nodo;
+        dot += nodoHijo + "[label=\"" + nombreHijo + "\"]\n";
+        dot += nodoPadre_G + " -> " + nodoHijo + "\n";
+        return dot;
+    }
 }
 exports.Identifier = Identifier;

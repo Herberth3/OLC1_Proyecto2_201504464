@@ -1,6 +1,8 @@
+import { Template_Grafo } from "../Template_Grafo";
 import { Template_Instruccion } from "../template_Instruccion";
 
 export class Class_Interface extends Template_Instruccion {
+
     modificador: string;
     tipo: string;
     identificador: string;
@@ -52,4 +54,57 @@ export class Class_Interface extends Template_Instruccion {
         return espacios;
     }
 
+    recolectarDot(t_g: Template_Grafo): string {
+        let dot: string = "";
+        let esPrimero: boolean = true;
+        let nodoPadre_G: string = "nodo" + t_g.id_Nodo;
+        let nodoPadre_A: string = "";
+        let nodoHijo: string = "";
+
+        //dot += this.recolectorDotHijo(t_g, nodoPadre_G, this.modificador);
+        dot += this.recolectorDotHijo(t_g, nodoPadre_G, this.tipo);
+        dot += this.recolectorDotHijo(t_g, nodoPadre_G, this.identificador);
+
+        if (this.declaraciones_globales.length > 0) {
+
+            this.declaraciones_globales.forEach(element => {
+
+                t_g.id_Nodo++;
+                nodoPadre_A = "nodo" + t_g.id_Nodo;
+                dot += nodoPadre_A + "[label=\"LIST_DECLARATION_GLOBAL\"]\n";
+
+                if (esPrimero) {
+                    esPrimero = false;
+                } else {
+                    dot += nodoPadre_A + " -> " + nodoHijo + "\n";
+                }
+
+                t_g.id_Nodo++;
+                nodoHijo = "nodo" + t_g.id_Nodo;
+                dot += nodoHijo + "[label=\"DECLARATION_GLOBAL\"]\n";
+
+                dot += nodoPadre_A + " -> " + nodoHijo + "\n";
+
+                dot += element.recolectarDot(t_g);
+
+                nodoHijo = nodoPadre_A;
+            });
+            dot += nodoPadre_G + " -> " + nodoPadre_A + "\n";
+            
+        }
+
+        return dot;
+    }
+
+    recolectorDotHijo(t_g: Template_Grafo, nodoPadre_G: string, nombreHijo: string): string {
+        let dot: string = "";
+        let nodoHijo: string = "";
+
+        t_g.id_Nodo++;
+        nodoHijo = "nodo" + t_g.id_Nodo;
+        dot += nodoHijo + "[label=\"" + nombreHijo + "\"]\n";
+        dot += nodoPadre_G + " -> " + nodoHijo + "\n";
+
+        return dot;
+    }
 }

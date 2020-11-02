@@ -34,5 +34,35 @@ class Asignation extends template_Instruccion_1.Template_Instruccion {
         }
         return espacios;
     }
+    recolectarDot(t_g) {
+        let dot = "";
+        let nodoPadre_G = "nodo" + t_g.id_Nodo;
+        let nodoPadre_A = "";
+        let nodoHijo = "";
+        if (this.asignacion_Normal) {
+            t_g.id_Nodo++;
+            nodoHijo = "nodo" + t_g.id_Nodo;
+            dot += nodoHijo + "[label=\"ASIGNATION\"]\n";
+            dot += nodoPadre_G + " -> " + nodoHijo + "\n";
+            /** AHORA EL NODOPADRE_G ES EL NODO ASIGNATION **/
+            nodoPadre_G = nodoHijo;
+        }
+        dot += this.recolectorDotHijo(t_g, nodoPadre_G, this.identificador);
+        t_g.id_Nodo++;
+        nodoPadre_A = "nodo" + t_g.id_Nodo;
+        dot += nodoPadre_A + "[label=\"EXPRESION\"]\n";
+        dot += nodoPadre_G + " -> " + nodoPadre_A + "\n";
+        dot += this.expresion.recolectarDot(t_g);
+        return dot;
+    }
+    recolectorDotHijo(t_g, nodoPadre_G, nombreHijo) {
+        let dot = "";
+        let nodoHijo = "";
+        t_g.id_Nodo++;
+        nodoHijo = "nodo" + t_g.id_Nodo;
+        dot += nodoHijo + "[label=\"" + nombreHijo + "\"]\n";
+        dot += nodoPadre_G + " -> " + nodoHijo + "\n";
+        return dot;
+    }
 }
 exports.Asignation = Asignation;
