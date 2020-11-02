@@ -193,7 +193,7 @@ case 80:
 this.$ = new Return_Continue_Break($$[$0-2], $$[$0-1], true, this._$.first_column); 
 break;
 case 82: case 83:
-this.$ = new Print($$[$0-2], this._$.first_column); 
+this.$ = new Print($$[$0-4], $$[$0-2], this._$.first_column); 
 break;
 case 84:
 this.$ = new Aritmetica($$[$0-2], Type_Operation.SUMA, $$[$0]); 

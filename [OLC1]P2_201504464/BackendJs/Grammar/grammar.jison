@@ -328,8 +328,8 @@ RETURN
 /******************************************************************************************************************/
 
 PRINT
-    : r_System punto r_out punto r_println parentesis_izq EXPRESION parentesis_der punto_y_coma {$$ = new Print($7, this._$.first_column); }
-    | r_System punto r_out punto r_print parentesis_izq EXPRESION parentesis_der punto_y_coma   {$$ = new Print($7, this._$.first_column); }
+    : r_System punto r_out punto r_println parentesis_izq EXPRESION parentesis_der punto_y_coma {$$ = new Print($5, $7, this._$.first_column); }
+    | r_System punto r_out punto r_print parentesis_izq EXPRESION parentesis_der punto_y_coma   {$$ = new Print($5, $7, this._$.first_column); }
 ;
 
 /******************************************************************************************************************/
