@@ -96,25 +96,28 @@ class Method extends template_Instruccion_1.Template_Instruccion {
         }
         /*********************** BLOQUE DE PARAMETROS PARA LOS METODOS ******************************/
         /*********************** BLOQUE DE SENTENCIAS PARA LOS METODOS ******************************/
-        if (this.sentencias.length > 0) {
-            this.sentencias.forEach(element => {
-                t_g.id_Nodo++;
-                nodoPadre_A = "nodo" + t_g.id_Nodo;
-                dot += nodoPadre_A + "[label=\"LIST_SENTENCIAS\"]\n";
-                if (esPrimero) {
-                    esPrimero = false;
-                }
-                else {
+        if (this.sentencias != null) {
+            if (this.sentencias.length > 0) {
+                esPrimero = true;
+                this.sentencias.forEach(element => {
+                    t_g.id_Nodo++;
+                    nodoPadre_A = "nodo" + t_g.id_Nodo;
+                    dot += nodoPadre_A + "[label=\"LIST_SENTENCIAS\"]\n";
+                    if (esPrimero) {
+                        esPrimero = false;
+                    }
+                    else {
+                        dot += nodoPadre_A + " -> " + nodoHijo + "\n";
+                    }
+                    t_g.id_Nodo++;
+                    nodoHijo = "nodo" + t_g.id_Nodo;
+                    dot += nodoHijo + "[label=\"SENTENCIAS\"]\n";
                     dot += nodoPadre_A + " -> " + nodoHijo + "\n";
-                }
-                t_g.id_Nodo++;
-                nodoHijo = "nodo" + t_g.id_Nodo;
-                dot += nodoHijo + "[label=\"SENTENCIAS\"]\n";
-                dot += nodoPadre_A + " -> " + nodoHijo + "\n";
-                dot += element.recolectarDot(t_g);
-                nodoHijo = nodoPadre_A;
-            });
-            dot += nodoPadre_G + " -> " + nodoPadre_A + "\n";
+                    dot += element.recolectarDot(t_g);
+                    nodoHijo = nodoPadre_A;
+                });
+                dot += nodoPadre_G + " -> " + nodoPadre_A + "\n";
+            }
         }
         /*********************** BLOQUE DE SENTENCIAS PARA LOS METODOS ******************************/
         return dot;
