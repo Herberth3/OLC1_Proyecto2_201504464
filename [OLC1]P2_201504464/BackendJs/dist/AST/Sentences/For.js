@@ -41,5 +41,58 @@ class For extends template_Instruccion_1.Template_Instruccion {
         }
         return espacios;
     }
+    recolectarDot(t_g) {
+        let dot = "";
+        let esPrimero = true;
+        let nodoPadre_G = "nodo" + t_g.id_Nodo;
+        let nodoPadre_A = "";
+        let nodoHijo = "";
+        t_g.id_Nodo++;
+        nodoHijo = "nodo" + t_g.id_Nodo;
+        dot += nodoHijo + "[label=\"FOR\"]\n";
+        dot += nodoPadre_G + " -> " + nodoHijo + "\n";
+        /** AHORA EL NODOPADRE_G ES EL NODO FOR **/
+        nodoPadre_G = nodoHijo;
+        /** RECOLECTAR DECLARATION **/
+        dot += this.declaracion.recolectarDot(t_g);
+        t_g.id_Nodo++;
+        nodoHijo = "nodo" + t_g.id_Nodo;
+        dot += nodoHijo + "[label=\"EXPRESION\"]\n";
+        dot += nodoPadre_G + " -> " + nodoHijo + "\n";
+        /** RECOLECTAR EXP_CONDICION **/
+        dot += this.expresion_Condicion.recolectarDot(t_g);
+        t_g.id_Nodo++;
+        nodoHijo = "nodo" + t_g.id_Nodo;
+        dot += nodoHijo + "[label=\"EXPRESION\"]\n";
+        dot += nodoPadre_G + " -> " + nodoHijo + "\n";
+        /** RECOLECTAR EXP_INCRE_DECRE **/
+        dot += this.expresion_Incre_Decre.recolectarDot(t_g);
+        /*********************** BLOQUE DE SENTENCIAS PARA EL CICLO FOR ******************************/
+        if (this.sentencias_Ciclo.length > 0) {
+            this.sentencias_Ciclo.forEach(element => {
+                t_g.id_Nodo++;
+                nodoPadre_A = "nodo" + t_g.id_Nodo;
+                dot += nodoPadre_A + "[label=\"LIST_BLOQUE_CICLO\"]\n";
+                if (esPrimero) {
+                    esPrimero = false;
+                }
+                else {
+                    dot += nodoPadre_A + " -> " + nodoHijo + "\n";
+                }
+                t_g.id_Nodo++;
+                nodoHijo = "nodo" + t_g.id_Nodo;
+                dot += nodoHijo + "[label=\"SENTENCIAS_CICLO\"]\n";
+                dot += nodoPadre_A + " -> " + nodoHijo + "\n";
+                dot += element.recolectarDot(t_g);
+                nodoHijo = nodoPadre_A;
+            });
+            dot += nodoPadre_G + " -> " + nodoPadre_A + "\n";
+        }
+        /*********************** BLOQUE DE SENTENCIAS PARA EL CICLO FOR ******************************/
+        return dot;
+    }
+    recolectorDotHijo(t_g, nodoPadre_G, nombreHijo) {
+        throw new Error("Method not implemented.");
+    }
 }
 exports.For = For;

@@ -77,5 +77,86 @@ class If extends template_Instruccion_1.Template_Instruccion {
         }
         return espacios;
     }
+    recolectarDot(t_g) {
+        let dot = "";
+        let esPrimero = true;
+        let nodoPadre_G = "nodo" + t_g.id_Nodo;
+        let nodoPadre_A = "";
+        let nodoHijo = "";
+        t_g.id_Nodo++;
+        nodoHijo = "nodo" + t_g.id_Nodo;
+        dot += nodoHijo + "[label=\"IF\"]\n";
+        dot += nodoPadre_G + " -> " + nodoHijo + "\n";
+        /** AHORA EL NODOPADRE_G ES EL NODO IF **/
+        nodoPadre_G = nodoHijo;
+        dot += this.recolectorDotHijo(t_g, nodoPadre_G, "EXPRESION");
+        /** RECOLECTAR EXPRESION **/
+        dot += this.expresion_Condicion.recolectarDot(t_g);
+        /*********************** BLOQUE DE SENTENCIAS PARA EL IF ******************************/
+        if (this.sentencias_Ciclo1.length > 0) {
+            this.sentencias_Ciclo1.forEach(element => {
+                t_g.id_Nodo++;
+                nodoPadre_A = "nodo" + t_g.id_Nodo;
+                dot += nodoPadre_A + "[label=\"LIST_BLOQUE_CICLO\"]\n";
+                if (esPrimero) {
+                    esPrimero = false;
+                }
+                else {
+                    dot += nodoPadre_A + " -> " + nodoHijo + "\n";
+                }
+                t_g.id_Nodo++;
+                nodoHijo = "nodo" + t_g.id_Nodo;
+                dot += nodoHijo + "[label=\"SENTENCIAS_CICLO\"]\n";
+                dot += nodoPadre_A + " -> " + nodoHijo + "\n";
+                dot += element.recolectarDot(t_g);
+                nodoHijo = nodoPadre_A;
+            });
+            dot += nodoPadre_G + " -> " + nodoPadre_A + "\n";
+        }
+        /*********************** BLOQUE DE SENTENCIAS PARA EL IF ******************************/
+        if (this.existe_Else) {
+            dot += this.recolectorDotHijo(t_g, nodoPadre_G, "ELSE");
+            /** AHORA EL NODOPADRE_G ES EL NODO ELSE **/
+            nodoPadre_G = "nodo" + t_g.id_Nodo;
+            esPrimero = true;
+            /*********************** BLOQUE DE SENTENCIAS PARA EL ELSE ******************************/
+            if (this.sentencias_Ciclo2.length > 0) {
+                this.sentencias_Ciclo2.forEach(element => {
+                    t_g.id_Nodo++;
+                    nodoPadre_A = "nodo" + t_g.id_Nodo;
+                    dot += nodoPadre_A + "[label=\"LIST_BLOQUE_CICLO\"]\n";
+                    if (esPrimero) {
+                        esPrimero = false;
+                    }
+                    else {
+                        dot += nodoPadre_A + " -> " + nodoHijo + "\n";
+                    }
+                    t_g.id_Nodo++;
+                    nodoHijo = "nodo" + t_g.id_Nodo;
+                    dot += nodoHijo + "[label=\"SENTENCIAS_CICLO\"]\n";
+                    dot += nodoPadre_A + " -> " + nodoHijo + "\n";
+                    dot += element.recolectarDot(t_g);
+                    nodoHijo = nodoPadre_A;
+                });
+                dot += nodoPadre_G + " -> " + nodoPadre_A + "\n";
+            }
+            /*********************** BLOQUE DE SENTENCIAS PARA EL ELSE ******************************/
+        }
+        if (this.existe_ElseIf) {
+            dot += this.recolectorDotHijo(t_g, nodoPadre_G, "ELSE");
+            /** RECOLECTAR SENTENCIA ELSE_IF **/
+            dot += this.sentencia_If.recolectarDot(t_g);
+        }
+        return dot;
+    }
+    recolectorDotHijo(t_g, nodoPadre_G, nombreHijo) {
+        let dot = "";
+        let nodoHijo = "";
+        t_g.id_Nodo++;
+        nodoHijo = "nodo" + t_g.id_Nodo;
+        dot += nodoHijo + "[label=\"" + nombreHijo + "\"]\n";
+        dot += nodoPadre_G + " -> " + nodoHijo + "\n";
+        return dot;
+    }
 }
 exports.If = If;

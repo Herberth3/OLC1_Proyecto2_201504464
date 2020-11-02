@@ -1,3 +1,4 @@
+import { Template_Grafo } from "../Template_Grafo";
 import { Template_Instruccion } from "../template_Instruccion";
 
 export class Do_While extends Template_Instruccion{
@@ -46,4 +47,67 @@ export class Do_While extends Template_Instruccion{
         return espacios;
     }
     
+    recolectarDot(t_g: Template_Grafo): string {
+        let dot: string = "";
+        let esPrimero: boolean = true;
+        let nodoPadre_G: string = "nodo" + t_g.id_Nodo;
+        let nodoPadre_A: string = "";
+        let nodoHijo: string = "";
+
+        t_g.id_Nodo++;
+        nodoHijo = "nodo" + t_g.id_Nodo;
+        dot += nodoHijo + "[label=\"DO_WHILE\"]\n";
+        dot += nodoPadre_G + " -> " + nodoHijo + "\n";
+
+        /** AHORA EL NODOPADRE_G ES EL NODO DO_WHILE **/
+        nodoPadre_G = nodoHijo;
+
+        /*********************** BLOQUE DE SENTENCIAS PARA EL CICLO DO_WHILE ******************************/
+        if (this.sentencias_Ciclo.length > 0) {
+
+            this.sentencias_Ciclo.forEach(element => {
+
+                t_g.id_Nodo++;
+                nodoPadre_A = "nodo" + t_g.id_Nodo;
+                dot += nodoPadre_A + "[label=\"LIST_BLOQUE_CICLO\"]\n";
+
+                if (esPrimero) {
+                    esPrimero = false;
+                } else {
+                    dot += nodoPadre_A + " -> " + nodoHijo + "\n";
+                }
+
+                t_g.id_Nodo++;
+                nodoHijo = "nodo" + t_g.id_Nodo;
+                dot += nodoHijo + "[label=\"SENTENCIAS_CICLO\"]\n";
+
+                dot += nodoPadre_A + " -> " + nodoHijo + "\n";
+
+                dot += element.recolectarDot(t_g);
+
+                nodoHijo = nodoPadre_A;
+            });
+            dot += nodoPadre_G + " -> " + nodoPadre_A + "\n";
+
+        }
+        /*********************** BLOQUE DE SENTENCIAS PARA EL CICLO DO_WHILE ******************************/
+
+        dot += this.recolectorDotHijo(t_g, nodoPadre_G, "EXPRESION");
+
+        /** RECOLECTAR EXP_CONDICION **/
+        dot += this.expresion_Condicion.recolectarDot(t_g);
+
+        return dot;
+    }
+    recolectorDotHijo(t_g: Template_Grafo, nodoPadre_G: string, nombreHijo: string): string {
+        let dot: string = "";
+        let nodoHijo: string = "";
+
+        t_g.id_Nodo++;
+        nodoHijo = "nodo" + t_g.id_Nodo;
+        dot += nodoHijo + "[label=\"" + nombreHijo + "\"]\n";
+        dot += nodoPadre_G + " -> " + nodoHijo + "\n";
+
+        return dot;
+    }
 }
