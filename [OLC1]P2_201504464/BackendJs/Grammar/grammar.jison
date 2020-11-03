@@ -17,6 +17,9 @@
     const { Do_While } = require('../dist/AST/Sentences/Do_While');
     const { If } = require('../dist/AST/Sentences/If');
     const { Print } = require('../dist/AST/Sentences/Print');
+    const { Tipo } = require('../dist/TOKENS/Token');
+    const { TipoError } = require('../dist/TOKENS/Token_Error');
+    const { Listas } = require('../dist/TOKENS/Listas');
 %}
 
 /* Definición Léxica */
@@ -26,78 +29,75 @@
 
 %%
 \s+											// se ignoran espacios en blanco
-"//".*										/* comentario simple línea*/
-[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]			/* comentario multiple líneas*/
+"//".*										/* comentario simple línea*/ {Listas.addToken(Tipo.COMENTARIO_LINEA, yytext, yylloc.first_line, yylloc.first_column);}
+[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]			{Listas.addToken(Tipo.COMENTARIO_BLOQUE, yytext, yylloc.first_line, yylloc.first_column);} /* comentario multiple líneas*/
 
-"public"			return 'r_public';
-"class"			    return 'r_class';
-"interface"		    return 'r_interface';
-"void"			    return 'r_void';
-"for"				return 'r_for';
-"while"				return 'r_while';
-"do"				return 'r_do';
-"if"				return 'r_if';
-"else"				return 'r_else';
-"break"				return 'r_break';
-"continue"			return 'r_continue';
-"return"            return 'r_return';
-"int"			    return 'r_int';
-"double"			return 'r_double';
-"String"			return 'r_String';
-"char"				return 'r_char';
-"boolean"			return 'r_boolean';
-"true"				return 'r_true';
-"false"				return 'r_false';
-"static"            return 'r_static';
-"main"				return 'r_main';
-"args"				return 'r_args';
-"System"			return 'r_System';
-"out"				return 'r_out';
-"println"			return 'r_println';
-"print"             return 'r_print';
+"public"			{Listas.addToken(Tipo.RESERVADA_PUBLIC, yytext, yylloc.first_line, yylloc.first_column); return 'r_public';}
+"class"			    {Listas.addToken(Tipo.RESERVADA_CLASS, yytext, yylloc.first_line, yylloc.first_column); return 'r_class';}
+"interface"		    {Listas.addToken(Tipo.RESERVADA_INTERFACE, yytext, yylloc.first_line, yylloc.first_column); return 'r_interface';}
+"void"			    {Listas.addToken(Tipo.RESERVADA_VOID, yytext, yylloc.first_line, yylloc.first_column); return 'r_void';}
+"for"				{Listas.addToken(Tipo.RESERVADA_FOR, yytext, yylloc.first_line, yylloc.first_column); return 'r_for';}
+"while"				{Listas.addToken(Tipo.RESERVADA_WHILE, yytext, yylloc.first_line, yylloc.first_column); return 'r_while';}
+"do"				{Listas.addToken(Tipo.RESERVADA_DO, yytext, yylloc.first_line, yylloc.first_column); return 'r_do';}
+"if"				{Listas.addToken(Tipo.RESERVADA_IF, yytext, yylloc.first_line, yylloc.first_column); return 'r_if';}
+"else"				{Listas.addToken(Tipo.RESERVADA_ELSE, yytext, yylloc.first_line, yylloc.first_column); return 'r_else';}
+"break"				{Listas.addToken(Tipo.RESERVADA_BREAK, yytext, yylloc.first_line, yylloc.first_column); return 'r_break';}
+"continue"			{Listas.addToken(Tipo.RESERVADA_CONTINUE, yytext, yylloc.first_line, yylloc.first_column); return 'r_continue';}
+"return"            {Listas.addToken(Tipo.RESERVADA_RETURN, yytext, yylloc.first_line, yylloc.first_column); return 'r_return';}
+"int"			    {Listas.addToken(Tipo.RESERVADA_INT, yytext, yylloc.first_line, yylloc.first_column); return 'r_int';}
+"double"			{Listas.addToken(Tipo.RESERVADA_DOUBLE, yytext, yylloc.first_line, yylloc.first_column); return 'r_double';}
+"String"			{Listas.addToken(Tipo.RESERVADA_STRING, yytext, yylloc.first_line, yylloc.first_column); return 'r_String';}
+"char"				{Listas.addToken(Tipo.RESERVADA_CHAR, yytext, yylloc.first_line, yylloc.first_column); return 'r_char';}
+"boolean"			{Listas.addToken(Tipo.RESERVADA_BOOLEAN, yytext, yylloc.first_line, yylloc.first_column); return 'r_boolean';}
+"true"				{Listas.addToken(Tipo.RESERVADA_TRUE, yytext, yylloc.first_line, yylloc.first_column); return 'r_true';}
+"false"				{Listas.addToken(Tipo.RESERVADA_FALSE, yytext, yylloc.first_line, yylloc.first_column); return 'r_false';}
+"static"            {Listas.addToken(Tipo.RESERVADA_STATIC, yytext, yylloc.first_line, yylloc.first_column); return 'r_static';}
+"main"				{Listas.addToken(Tipo.RESERVADA_MAIN, yytext, yylloc.first_line, yylloc.first_column); return 'r_main';}
+"args"				{Listas.addToken(Tipo.RESERVADA_ARGS, yytext, yylloc.first_line, yylloc.first_column); return 'r_args';}
+"System"			{Listas.addToken(Tipo.RESERVADA_SYSTEM, yytext, yylloc.first_line, yylloc.first_column); return 'r_System';}
+"out"				{Listas.addToken(Tipo.RESERVADA_OUT, yytext, yylloc.first_line, yylloc.first_column); return 'r_out';}
+"println"			{Listas.addToken(Tipo.RESERVADA_PRINTLN, yytext, yylloc.first_line, yylloc.first_column); return 'r_println';}
+"print"             {Listas.addToken(Tipo.RESERVADA_PRINT, yytext, yylloc.first_line, yylloc.first_column); return 'r_print';}
 
-"{"					return 'llave_izq';
-"}"					return 'llave_der';
-","					return 'coma';
-"."					return 'punto';
-";"					return 'punto_y_coma';
-"["					return 'corchete_izq';
-"]"					return 'corchete_der';
-"("					return 'parentesis_izq';
-")"					return 'parentesis_der';
+"{"					{Listas.addToken(Tipo.LLAVE_IZQ, yytext, yylloc.first_line, yylloc.first_column); return 'llave_izq';}
+"}"					{Listas.addToken(Tipo.LLAVE_DER, yytext, yylloc.first_line, yylloc.first_column); return 'llave_der';}
+","					{Listas.addToken(Tipo.COMA, yytext, yylloc.first_line, yylloc.first_column); return 'coma';}
+"."					{Listas.addToken(Tipo.PUNTO, yytext, yylloc.first_line, yylloc.first_column); return 'punto';}
+";"					{Listas.addToken(Tipo.PUNTO_Y_COMA, yytext, yylloc.first_line, yylloc.first_column); return 'punto_y_coma';}
+"["					{Listas.addToken(Tipo.CORCHETE_IZQ, yytext, yylloc.first_line, yylloc.first_column); return 'corchete_izq';}
+"]"					{Listas.addToken(Tipo.CORCHETE_DER, yytext, yylloc.first_line, yylloc.first_column); return 'corchete_der';}
+"("					{Listas.addToken(Tipo.PARENTESIS_IZQ, yytext, yylloc.first_line, yylloc.first_column); return 'parentesis_izq';}
+")"					{Listas.addToken(Tipo.PARENTESIS_DER, yytext, yylloc.first_line, yylloc.first_column); return 'parentesis_der';}
 
-"++"				return 's_pos_incremento';
-"--"				return 's_pos_decremento';
-"+"					return 's_mas';
-"-"					return 's_menos';
-"*"					return 's_por';
-"/"					return 's_division';
+"++"				{Listas.addToken(Tipo.SIGNO_POS_INCREMENTO, yytext, yylloc.first_line, yylloc.first_column); return 's_pos_incremento';}
+"--"				{Listas.addToken(Tipo.SIGNO_POS_DECREMENTO, yytext, yylloc.first_line, yylloc.first_column); return 's_pos_decremento';}
+"+"					{Listas.addToken(Tipo.SIGNO_MAS, yytext, yylloc.first_line, yylloc.first_column); return 's_mas';}
+"-"					{Listas.addToken(Tipo.SIGNO_MENOS, yytext, yylloc.first_line, yylloc.first_column); return 's_menos';}
+"*"					{Listas.addToken(Tipo.SIGNO_POR, yytext, yylloc.first_line, yylloc.first_column); return 's_por';}
+"/"					{Listas.addToken(Tipo.SIGNO_DIVISION, yytext, yylloc.first_line, yylloc.first_column); return 's_division';}
 
-">="				return 's_mayor_igual_que';
-"<="				return 's_menor_igual_que';
-"<"					return 's_menor_que';
-">"					return 's_mayor_que';
-"!="				return 's_diferente_de';
-"=="				return 's_doble_igual';
-"="					return 's_igual';
-"&&"				return 's_AND';
-"||"				return 's_OR';
-"!"					return 's_NOT';
-"^"				    return 's_XOR';
+">="				{Listas.addToken(Tipo.SIGNO_MAYOR_IGUAL_QUE, yytext, yylloc.first_line, yylloc.first_column); return 's_mayor_igual_que';}
+"<="				{Listas.addToken(Tipo.SIGNO_MENOR_IGUAL_QUE, yytext, yylloc.first_line, yylloc.first_column); return 's_menor_igual_que';}
+"<"					{Listas.addToken(Tipo.SIGNO_MENOR_QUE, yytext, yylloc.first_line, yylloc.first_column); return 's_menor_que';}
+">"					{Listas.addToken(Tipo.SIGNO_MAYOR_QUE, yytext, yylloc.first_line, yylloc.first_column); return 's_mayor_que';}
+"!="				{Listas.addToken(Tipo.SIGNO_DIFERENTE_DE, yytext, yylloc.first_line, yylloc.first_column); return 's_diferente_de';}
+"=="				{Listas.addToken(Tipo.SIGNO_DOBLE_IGUAL, yytext, yylloc.first_line, yylloc.first_column); return 's_doble_igual';}
+"="					{Listas.addToken(Tipo.SIGNO_IGUAL, yytext, yylloc.first_line, yylloc.first_column); return 's_igual';}
+"&&"				{Listas.addToken(Tipo.SIGNO_AND, yytext, yylloc.first_line, yylloc.first_column); return 's_AND';}
+"||"				{Listas.addToken(Tipo.SIGNO_OR, yytext, yylloc.first_line, yylloc.first_column); return 's_OR';}
+"!"					{Listas.addToken(Tipo.SIGNO_NOT, yytext, yylloc.first_line, yylloc.first_column); return 's_NOT';}
+"^"				    {Listas.addToken(Tipo.SIGNO_XOR, yytext, yylloc.first_line, yylloc.first_column); return 's_XOR';}
 
 
-\"[^\"]*\"	                            return 'cadena_string'; 
-"'"[^']"'"				                return 'cadena_char';
-[0-9]+("."[0-9]+)\b  			        return 'numero_decimal';
-[0-9]+\b								return 'numero_entero';
-([a-zA-Z])[a-zA-Z0-9_]*	                return 'identificador';
+\"[^\"]*\"	                            {Listas.addToken(Tipo.CADENA_STRING, yytext, yylloc.first_line, yylloc.first_column); return 'cadena_string';} 
+"'"[^']"'"				                {Listas.addToken(Tipo.CADENA_CHAR, yytext, yylloc.first_line, yylloc.first_column); return 'cadena_char';}
+[0-9]+("."[0-9]+)\b  			        {Listas.addToken(Tipo.NUMERO_DECIMAL, yytext, yylloc.first_line, yylloc.first_column); return 'numero_decimal';}
+[0-9]+\b								{Listas.addToken(Tipo.NUMERO_ENTERO, yytext, yylloc.first_line, yylloc.first_column); return 'numero_entero';}
+([a-zA-Z])[a-zA-Z0-9_]*	                {Listas.addToken(Tipo.IDENTIFICADOR, yytext, yylloc.first_line, yylloc.first_column); return 'identificador';}
 
 <<EOF>>				return 'EOF';
 
-.					{ 
-                        console.log('Este es un error LEXICO: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + yylloc.first_column);
-                        
-                    }
+.					{ Listas.addTokenError(yytext, TipoError.LEXICO, "El caracter no pertenece al lenguaje", yylloc.first_line, yylloc.first_column);}
 
 /lex
 
