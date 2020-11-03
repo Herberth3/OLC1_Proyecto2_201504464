@@ -12,6 +12,7 @@
 </head>
 
 <body>
+    <!----------------------------------------BARRA DE NAVEGACION--------------------------------------------->
     <div class="menu">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand">
@@ -31,12 +32,12 @@
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                             <a class="dropdown-item">
                                 <label>
-                                    Abrir <input type="file" id="files" style="display: none;" accept=".java"/>
+                                    Abrir <input type="file" id="files" style="display: none;" accept=".java" />
                                 </label>
                             </a>
-                            <a class="dropdown-item" >
-                                <label >
-                                    Descargar <input type="button" name="downloadFile" style="display: none;"/>
+                            <a class="dropdown-item">
+                                <label>
+                                    Descargar <input type="button" name="downloadFile" style="display: none;" />
                                 </label>
                             </a>
                         </div>
@@ -47,15 +48,26 @@
                             Descargar
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" href="#">Action1</a>
-                            <a class="dropdown-item" href="#">Another action1</a>
-                            <a class="dropdown-item" href="#">Something else here1</a>
+                            <a class="dropdown-item">
+                                <label>
+                                    Descargar Javascript<input type="button" name="downloadJavascript"
+                                        style="display: none;" />
+                                </label>
+                            </a>
                         </div>
+                    </li>
+                    <li>
+                        <a class="nav-link" id=""
+                            aria-haspopup="true" aria-expanded="false">
+                            <h4>    Carnet: 201504464</h4>
+                        </a>
                     </li>
                 </ul>
             </div>
         </nav>
     </div>
+    <!----------------------------------------BARRA DE NAVEGACION--------------------------------------------->
+    <!---------------------------------------------EDITOR----------------------------------------------------->
     <div class="editor">
         <div class="editor__wrapper">
             <div class="editor__body">
@@ -79,8 +91,46 @@
             </div>
         </div>
     </div>
+    <!---------------------------------------------EDITOR----------------------------------------------------->
+    <!----------------------------------------TABLA DE ERRORES------------------------------------------------>
+    <div class="table-responsive rounded bg-dark">
+        <h5 style="color: crimson;">TABLA DE ERRORES------------------------------------------------</h5>
+        <table class="table tableError" id="tablaErrores" style="color:white;">
+            <thead>
+                <tr>
+                    <th style="width:5%">No.</th>
+                    <th style="width:20%">Caracter</th>
+                    <th style="width:20%">Tipo de Error</th>
+                    <th style="width:40%">Descripción</th>
+                    <th style="width:5%">Fila</th>
+                    <th style="width:5%">Columna</th>
+                </tr>
+            </thead>
+            <tbody>
 
+            </tbody>
+        </table>
+    </div>
+    <!----------------------------------------TABLA DE ERRORES------------------------------------------------>
+    <!-----------------------------------------TABLA DE TOKENS------------------------------------------------>
+    <div class="table-responsive rounded bg-dark">
+        <h5 style="color: forestgreen;">TABLA DE TOKENS------------------------------------------------</h5>
+        <table class="table tableToken" id="tablaTokens" style="color:white;">
+            <thead>
+                <tr>
+                    <th style="width:10%">No.</th>
+                    <th style="width:40%">Lexema/Token</th>
+                    <th style="width:30%">Tipo de Token</th>
+                    <th style="width:10%">Fila</th>
+                    <th style="width:10%">Columna</th>
+                </tr>
+            </thead>
+            <tbody>
 
+            </tbody>
+        </table>
+    </div>
+    <!-----------------------------------------TABLA DE TOKENS------------------------------------------------>
 
     <!-- Required Ace Libraries -->
     <script src="layout/js/ace-editor/src-min/ace.js"></script>
