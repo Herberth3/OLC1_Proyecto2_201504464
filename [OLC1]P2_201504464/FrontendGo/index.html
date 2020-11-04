@@ -57,9 +57,8 @@
                         </div>
                     </li>
                     <li>
-                        <a class="nav-link" id=""
-                            aria-haspopup="true" aria-expanded="false">
-                            <h4>    Carnet: 201504464</h4>
+                        <a class="nav-link" id="" aria-haspopup="true" aria-expanded="false">
+                            <h4> Carnet: 201504464</h4>
                         </a>
                     </li>
                 </ul>
@@ -74,11 +73,11 @@
                 <div id="editorCode" class="editor__code"></div>
             </div>
             <div class="editor__consoles">
-                <h5>Consola javascript</h5>
+                <h5>Consola de errores javascript</h5>
                 <div class="editor__console1">
                     <ul class="editor__console-logs1"></ul>
                 </div>
-                <h5>Consola Python</h5>
+                <h5>Consola de errores Python</h5>
                 <div class="editor__console2">
                     <ul class="editor__console-logs2"></ul>
                 </div>
@@ -132,6 +131,14 @@
     </div>
     <!-----------------------------------------TABLA DE TOKENS------------------------------------------------>
 
+    <div id="graph" style="text-align: center;">
+        <h5 style="color: navy;">------------------------------------------ARBOL AST------------------------------------------------</h5>
+    </div>
+
+    <!-- Required d3-Graphviz -->
+    <script src="//d3js.org/d3.v5.min.js"></script>
+    <script src="https://unpkg.com/@hpcc-js/wasm@0.3.11/dist/index.min.js"></script>
+    <script src="https://unpkg.com/d3-graphviz@3.0.5/build/d3-graphviz.js"></script>
     <!-- Required Ace Libraries -->
     <script src="layout/js/ace-editor/src-min/ace.js"></script>
     <script src="layout/js/ace-editor/src-min/mode-java.js"></script>

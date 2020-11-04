@@ -14,24 +14,8 @@ let codeEditor = ace.edit("editorCode");
 var nameCurrentFile = "";
 let traductionJS = "";
 let dot = "";
-
-let consoleMessages = [
-    {
-        message: "! - no pertenece - line 32 - column 45 - adio querida quedo a la disposicion y de la s cuales son"
-    },
-    {
-        message: "% - no pertenece - line 33 - column 32"
-    },
-    {
-        message: "# - no pertenece - line 76 - column 43"
-    },
-    {
-        message: "/ - no pertenece - line 34 - column 88"
-    },
-    {
-        message: "* - no pertenece - line 4 - column 8"
-    }
-];
+let listaTJS = [];
+let listaEJS = [];
 
 /*************************APLICATION INIT*********************************/
 let editorLib = {
@@ -42,28 +26,8 @@ let editorLib = {
         while (consoleLogList1.firstChild) {
             consoleLogList1.removeChild(consoleLogList1.firstChild);
         }
-    },
-    printToConsole() {
-        consoleMessages.forEach(log => {
-            const newLogItem = document.createElement('li');
-            const newLogText = document.createElement('pre');
 
-            newLogText.textContent = log.message;
-
-            newLogItem.appendChild(newLogText);
-
-            consoleLogList1.appendChild(newLogItem);
-        })
-    },
-    runResponse(data) {
-        let listaT = [];
-        let listaE = [];
-        listaT = data[0].listaToken;
-        listaE = data[0].listaErrores;
-        traductionJS = "";
-        dot = "";
-
-        let conteo = 1;
+        // Remove all elements in table list
         let i = tableError.rows.length;
         while (i > 1) {
             i--;
@@ -76,8 +40,36 @@ let editorLib = {
             tableToken.deleteRow(i);
         }
 
+        // Remove the AST graph
+        d3.select("#graph").graphviz().renderDot('digraph G{}');
+    },
+    printToConsole() {
+        let conteo = 1;
+        listaEJS.forEach(log => {
+            let rowError = conteo.toString() + " -- " + log.caracterError + " -- T:" + log.tipoTokenErrorEnString + " -- D:" + log.descripcionError;
+            rowError += " -- f:" + log.filaError + " -- c:" + log.columnaError;
+            const newLogItem = document.createElement('li');
+            const newLogText = document.createElement('pre');
+
+            newLogText.textContent = rowError;
+
+            newLogItem.appendChild(newLogText);
+
+            consoleLogList1.appendChild(newLogItem);
+            conteo++;
+        });
+    },
+    runResponse(data) {
+
+        listaTJS = data[0].listaToken;
+        listaEJS = data[0].listaErrores;
+        traductionJS = "";
+        dot = "";
+
+        let conteo = 1;
+
         if (tableError) {
-            listaE.forEach(token => {
+            listaEJS.forEach(tokenE => {
                 let newRow = tableError.insertRow(tableError.rows.length);
                 let no = newRow.insertCell(0);
                 let lexema = newRow.insertCell(1);
@@ -86,18 +78,18 @@ let editorLib = {
                 let linea = newRow.insertCell(4);
                 let columna = newRow.insertCell(5);
                 no.innerHTML = conteo.toString();
-                lexema.innerHTML = token.caracterError;
-                tipo.innerHTML = token.tipoTokenErrorEnString;
-                descripcion.innerHTML = token.descripcionError;
-                linea.innerHTML = token.filaError.toString();
-                columna.innerHTML = token.columnaError.toString();
+                lexema.innerHTML = tokenE.caracterError;
+                tipo.innerHTML = tokenE.tipoTokenErrorEnString;
+                descripcion.innerHTML = tokenE.descripcionError;
+                linea.innerHTML = tokenE.filaError.toString();
+                columna.innerHTML = tokenE.columnaError.toString();
                 conteo++;
             });
         }
 
         conteo = 1;
         if (tableToken) {
-            listaT.forEach(token => {
+            listaTJS.forEach(token => {
                 let newRow = tableToken.insertRow(tableToken.rows.length);
                 let no = newRow.insertCell(0);
                 let lexema = newRow.insertCell(1);
@@ -113,17 +105,29 @@ let editorLib = {
             });
         }
 
-        if (listaE.length > 0) {
+        /** SI LA LISTA DE ERRORES CONTIENE ELEMENTOS NO SE TRADUCE NI SE MUESTRA EL GRAFO **/
+        if (listaEJS.length > 0) {
             alert("No se pudo realizar la traduccion, existen errores!");
+            
+            // Print to the console
+            editorLib.printToConsole();
+
+            // Remove the AST graph
+            d3.select("#graph").graphviz().renderDot('digraph G{}');
         } else {
+            /** DE LO CONTRARIO SE TRADUCE EL CODIGO PARA DESCARGARLO Y SE MUESTRA EL GRAFO **/
             traductionJS = data[0].traduccion;
             dot = data[0].dot;
+
+            // Print the AST graph
+            d3.select("#graph").graphviz().renderDot(dot);
+
             alert("Traduccion exitosa!");
         }
     },
     init() {
         // Configure Ace
-
+        
         // Theme
         codeEditor.setTheme("ace/theme/dracula");
 
@@ -172,8 +176,6 @@ executeCodeBtn.addEventListener('click', () => {
                 }
             })
 
-        // Print to the console
-        editorLib.printToConsole();
     } else {
         alert("Editor vacio, ingrese contenido");
     }
@@ -187,6 +189,9 @@ inputFile.addEventListener('change', function (e) {
     const reader = new FileReader();
     /********************/
     let files = e.target.files, file = files[0];
+    if (!file) {
+        return;
+    }
     nameCurrentFile = file.name;
     //console.log(file.name.replace(".java", ""));
     /********************/
@@ -194,6 +199,8 @@ inputFile.addEventListener('change', function (e) {
         let fileContent = reader.result;
         codeEditor.setValue(fileContent);
         //console.log(reader);
+        // Clear console message
+        editorLib.clearConsoleScreen();
     }
     reader.readAsText(inputFile.files[0])
 }, false)
@@ -250,7 +257,7 @@ downloadJavascript.addEventListener('click', () => {
         if (nameCurrentFile == "") {
             nameCurrentFile = "newDownload.js"
         }
-        else{
+        else {
             nameCurrentFile = nameCurrentFile.replace(".java", "");
             nameCurrentFile = nameCurrentFile + ".js";
         }
