@@ -128,7 +128,7 @@ INICIO
 LIST_INSTRUCTIONS
     : LIST_INSTRUCTIONS INSTRUCTIONS    {$1.push($2); $$ = $1; }
     | INSTRUCTIONS                      {$$ = [$1]; }
-    | error { console.error('Este es un error SINTACTICO en Instrucciones: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column); }
+    | error llave_der { Listas.addTokenError(yytext, TipoError.SINTACTICO, "Error en instruccion class/interface, se recupero en->", this._$.first_line, this._$.first_column); $$ = [new Class_Interface("", "", "", [], this._$.first_column)]; } //Se debe retornar algo para que no truene, en este caso una instancia de class
 ;
 
 INSTRUCTIONS
@@ -151,7 +151,8 @@ BLOCK_DEFINITION_FUNCTIONS
 LIST_DECLARATION_GLOBAL
     : LIST_DECLARATION_GLOBAL DECLARATION_GLOBAL    {$1.push($2); $$ = $1; }
     | DECLARATION_GLOBAL                            {$$ = [$1]; }
-    | error { console.error('Este es un error SINTACTICO en Declaraciones globales: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column); }
+    | error { Listas.addTokenError(yytext, TipoError.SINTACTICO, "Error cerca de este caracter", this._$.first_line, this._$.first_column); $$ = [new Declaration("", [], this._$.first_column)]; }
+    | error punto_y_coma { Listas.addTokenError(yytext, TipoError.SINTACTICO, "Error en sentencia global, se recupero en->", this._$.first_line, this._$.first_column); $$ = [new Declaration("", [], this._$.first_column)];}
 ;
 
 DECLARATION_GLOBAL
@@ -164,7 +165,8 @@ DECLARATION_GLOBAL
 LIST_DEFINITION_FUNCTIONS
     : LIST_DEFINITION_FUNCTIONS DEFINITION_FUNCTIONS    {$1.push($2); $$ = $1; }
     | DEFINITION_FUNCTIONS                              {$$ = [$1]; }
-    | error { console.error('Este es un error SINTACTICO en Definicion de funciones: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column); }
+    | error { Listas.addTokenError(yytext, TipoError.SINTACTICO, "Error cerca de este caracter", this._$.first_line, this._$.first_column); $$ = [new Method("", "", "", [], [], this._$.first_column)]; }
+    | error punto_y_coma { Listas.addTokenError(yytext, TipoError.SINTACTICO, "Error en definir funcion, se recupero en->", this._$.first_line, this._$.first_column); $$ = [new Method("", "", "", [], [], this._$.first_column)]; }
 ;
 
 DEFINITION_FUNCTIONS
@@ -244,7 +246,8 @@ BLOCK_SENTENCIAS
 LIST_SENTENCIAS
     : LIST_SENTENCIAS SENTENCIAS    {$1.push($2); $$ = $1; }
     | SENTENCIAS                    {$$ = [$1]; }
-    | error { console.error('Este es un error SINTACTICO en Sentencias: ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column); }
+    | error { Listas.addTokenError(yytext, TipoError.SINTACTICO, "Error cerca de este caracter", this._$.first_line, this._$.first_column); $$ = [new Declaration("", [], this._$.first_column)]; }
+    | error punto_y_coma { Listas.addTokenError(yytext, TipoError.SINTACTICO, "Error en sentencia local, se recupero en->", this._$.first_line, this._$.first_column); $$ = [new Declaration("", [], this._$.first_column)]; }
 ;
 
 SENTENCIAS
@@ -283,7 +286,8 @@ BLOCK_CYCLE
 LIST_BLOQUE_CICLO
     : LIST_BLOQUE_CICLO SENTENCIAS_CICLO    {$1.push($2); $$ = $1; }
     | SENTENCIAS_CICLO                      {$$ = [$1]; }
-    | error punto_y_coma { console.error('Este es un error SINTACTICO en Bloque ciclo ' + yytext + ' Linea: ' + this._$.first_line + ' Columna: ' + this._$.first_column); }
+    | error { Listas.addTokenError(yytext, TipoError.SINTACTICO, "Error cerca de este caracter", this._$.first_line, this._$.first_column); $$ = [new Return_Continue_Break("", [], false, this._$.first_column)]; }
+    | error punto_y_coma { Listas.addTokenError(yytext, TipoError.SINTACTICO, "Error en sentencia local ciclo, se recupero en->", this._$.first_line, this._$.first_column); $$ = [new Return_Continue_Break("", [], false, this._$.first_column)];}   
 ;
 
 SENTENCIAS_CICLO
