@@ -14,11 +14,11 @@ export class Analizador_Lexico {
         this.estado = 0;
         this.auxLexema = "";
         this.textoDocumento = textoDocumento + "#";
-        let filaToken: number = 0;
+        let filaToken: number = 1;
         let columnaToken: number = 0;
         /** VALIDACIONES PARA COMENTARIO_BLOQUE **/
         let estadoComentario: number = 0;   //Guarda el estado anterior del comentario para saber si es de linea o bloque
-        let filaComentarioBloque: number = 0;
+        let filaComentarioBloque: number = 1;
         let columnaComentarioBloque: number = 0;
         let inicioComentarioBloque: boolean = false;
         /** VALIDACIONES PARA COMENTARIO_BLOQUE **/
@@ -86,7 +86,7 @@ export class Analizador_Lexico {
                     else {
                         if (c == '#' && i == this.textoDocumento.length - 1) {
                             if (this.lista_Errores.length > 0) {
-                                console.log("Se han encontrado errores lexicos");
+                                //console.log("Se han encontrado errores lexicos");
                             }
                             console.log("Se ha concluido el analisis lexico");
                         } else {

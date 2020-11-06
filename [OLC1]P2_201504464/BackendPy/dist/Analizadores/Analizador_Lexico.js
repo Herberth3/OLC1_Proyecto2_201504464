@@ -11,11 +11,11 @@ class Analizador_Lexico {
         this.estado = 0;
         this.auxLexema = "";
         this.textoDocumento = textoDocumento + "#";
-        let filaToken = 0;
+        let filaToken = 1;
         let columnaToken = 0;
         /** VALIDACIONES PARA COMENTARIO_BLOQUE **/
         let estadoComentario = 0; //Guarda el estado anterior del comentario para saber si es de linea o bloque
-        let filaComentarioBloque = 0;
+        let filaComentarioBloque = 1;
         let columnaComentarioBloque = 0;
         let inicioComentarioBloque = false;
         /** VALIDACIONES PARA COMENTARIO_BLOQUE **/
@@ -81,7 +81,7 @@ class Analizador_Lexico {
                     else {
                         if (c == '#' && i == this.textoDocumento.length - 1) {
                             if (this.lista_Errores.length > 0) {
-                                console.log("Se han encontrado errores lexicos");
+                                //console.log("Se han encontrado errores lexicos");
                             }
                             console.log("Se ha concluido el analisis lexico");
                         }
@@ -174,9 +174,6 @@ class Analizador_Lexico {
                         }
                         else if (this.auxLexema == 'print') {
                             this.addToken(Token_1.Tipo.RESERVADA_PRINT, filaToken, columnaToken - this.auxLexema.length);
-                        }
-                        else if (this.auxLexema == 'new') {
-                            this.addToken(Token_1.Tipo.RESERVADA_NEW, filaToken, columnaToken - this.auxLexema.length);
                         }
                         else {
                             this.addToken(Token_1.Tipo.IDENTIFICADOR, filaToken, columnaToken - this.auxLexema.length);
