@@ -28,41 +28,41 @@ var Tipo;
     Tipo[Tipo["RESERVADA_OUT"] = 23] = "RESERVADA_OUT";
     Tipo[Tipo["RESERVADA_PRINTLN"] = 24] = "RESERVADA_PRINTLN";
     Tipo[Tipo["RESERVADA_PRINT"] = 25] = "RESERVADA_PRINT";
-    Tipo[Tipo["RESERVADA_NEW"] = 26] = "RESERVADA_NEW";
-    Tipo[Tipo["IDENTIFICADOR"] = 27] = "IDENTIFICADOR";
-    Tipo[Tipo["CADENA_STRING"] = 28] = "CADENA_STRING";
-    Tipo[Tipo["CADENA_CHAR"] = 29] = "CADENA_CHAR";
-    Tipo[Tipo["COMENTARIO_LINEA"] = 30] = "COMENTARIO_LINEA";
-    Tipo[Tipo["COMENTARIO_BLOQUE"] = 31] = "COMENTARIO_BLOQUE";
-    Tipo[Tipo["NUMERO_ENTERO"] = 32] = "NUMERO_ENTERO";
-    Tipo[Tipo["NUMERO_DECIMAL"] = 33] = "NUMERO_DECIMAL";
-    Tipo[Tipo["LLAVE_IZQ"] = 34] = "LLAVE_IZQ";
-    Tipo[Tipo["LLAVE_DER"] = 35] = "LLAVE_DER";
-    Tipo[Tipo["COMA"] = 36] = "COMA";
-    Tipo[Tipo["PUNTO"] = 37] = "PUNTO";
-    Tipo[Tipo["PUNTO_Y_COMA"] = 38] = "PUNTO_Y_COMA";
-    Tipo[Tipo["CORCHETE_IZQ"] = 39] = "CORCHETE_IZQ";
-    Tipo[Tipo["CORCHETE_DER"] = 40] = "CORCHETE_DER";
-    Tipo[Tipo["PARENTESIS_IZQ"] = 41] = "PARENTESIS_IZQ";
-    Tipo[Tipo["PARENTESIS_DER"] = 42] = "PARENTESIS_DER";
-    Tipo[Tipo["SIGNO_MAS"] = 43] = "SIGNO_MAS";
-    Tipo[Tipo["SIGNO_MENOS"] = 44] = "SIGNO_MENOS";
-    Tipo[Tipo["SIGNO_POR"] = 45] = "SIGNO_POR";
-    Tipo[Tipo["SIGNO_DIVISION"] = 46] = "SIGNO_DIVISION";
-    Tipo[Tipo["SIGNO_MENOR_QUE"] = 47] = "SIGNO_MENOR_QUE";
-    Tipo[Tipo["SIGNO_MAYOR_QUE"] = 48] = "SIGNO_MAYOR_QUE";
-    Tipo[Tipo["SIGNO_DIFERENTE_DE"] = 49] = "SIGNO_DIFERENTE_DE";
-    Tipo[Tipo["SIGNO_POS_INCREMENTO"] = 50] = "SIGNO_POS_INCREMENTO";
-    Tipo[Tipo["SIGNO_POS_DECREMENTO"] = 51] = "SIGNO_POS_DECREMENTO";
-    Tipo[Tipo["SIGNO_MAYOR_IGUAL_QUE"] = 52] = "SIGNO_MAYOR_IGUAL_QUE";
-    Tipo[Tipo["SIGNO_MENOR_IGUAL_QUE"] = 53] = "SIGNO_MENOR_IGUAL_QUE";
-    Tipo[Tipo["SIGNO_IGUAL"] = 54] = "SIGNO_IGUAL";
-    Tipo[Tipo["SIGNO_DOBLE_IGUAL"] = 55] = "SIGNO_DOBLE_IGUAL";
-    Tipo[Tipo["SIGNO_AND"] = 56] = "SIGNO_AND";
-    Tipo[Tipo["SIGNO_OR"] = 57] = "SIGNO_OR";
-    Tipo[Tipo["SIGNO_NOT"] = 58] = "SIGNO_NOT";
-    Tipo[Tipo["SIGNO_XOR"] = 59] = "SIGNO_XOR";
-    Tipo[Tipo["DESCONOCIDO"] = 60] = "DESCONOCIDO";
+    Tipo[Tipo["IDENTIFICADOR"] = 26] = "IDENTIFICADOR";
+    Tipo[Tipo["CADENA_STRING"] = 27] = "CADENA_STRING";
+    Tipo[Tipo["CADENA_CHAR"] = 28] = "CADENA_CHAR";
+    Tipo[Tipo["COMENTARIO_LINEA"] = 29] = "COMENTARIO_LINEA";
+    Tipo[Tipo["COMENTARIO_BLOQUE"] = 30] = "COMENTARIO_BLOQUE";
+    Tipo[Tipo["NUMERO_ENTERO"] = 31] = "NUMERO_ENTERO";
+    Tipo[Tipo["NUMERO_DECIMAL"] = 32] = "NUMERO_DECIMAL";
+    Tipo[Tipo["LLAVE_IZQ"] = 33] = "LLAVE_IZQ";
+    Tipo[Tipo["LLAVE_DER"] = 34] = "LLAVE_DER";
+    Tipo[Tipo["COMA"] = 35] = "COMA";
+    Tipo[Tipo["PUNTO"] = 36] = "PUNTO";
+    Tipo[Tipo["PUNTO_Y_COMA"] = 37] = "PUNTO_Y_COMA";
+    Tipo[Tipo["CORCHETE_IZQ"] = 38] = "CORCHETE_IZQ";
+    Tipo[Tipo["CORCHETE_DER"] = 39] = "CORCHETE_DER";
+    Tipo[Tipo["PARENTESIS_IZQ"] = 40] = "PARENTESIS_IZQ";
+    Tipo[Tipo["PARENTESIS_DER"] = 41] = "PARENTESIS_DER";
+    Tipo[Tipo["SIGNO_MAS"] = 42] = "SIGNO_MAS";
+    Tipo[Tipo["SIGNO_MENOS"] = 43] = "SIGNO_MENOS";
+    Tipo[Tipo["SIGNO_POR"] = 44] = "SIGNO_POR";
+    Tipo[Tipo["SIGNO_DIVISION"] = 45] = "SIGNO_DIVISION";
+    Tipo[Tipo["SIGNO_MENOR_QUE"] = 46] = "SIGNO_MENOR_QUE";
+    Tipo[Tipo["SIGNO_MAYOR_QUE"] = 47] = "SIGNO_MAYOR_QUE";
+    Tipo[Tipo["SIGNO_DIFERENTE_DE"] = 48] = "SIGNO_DIFERENTE_DE";
+    Tipo[Tipo["SIGNO_POS_INCREMENTO"] = 49] = "SIGNO_POS_INCREMENTO";
+    Tipo[Tipo["SIGNO_POS_DECREMENTO"] = 50] = "SIGNO_POS_DECREMENTO";
+    Tipo[Tipo["SIGNO_MAYOR_IGUAL_QUE"] = 51] = "SIGNO_MAYOR_IGUAL_QUE";
+    Tipo[Tipo["SIGNO_MENOR_IGUAL_QUE"] = 52] = "SIGNO_MENOR_IGUAL_QUE";
+    Tipo[Tipo["SIGNO_IGUAL"] = 53] = "SIGNO_IGUAL";
+    Tipo[Tipo["SIGNO_DOBLE_IGUAL"] = 54] = "SIGNO_DOBLE_IGUAL";
+    Tipo[Tipo["SIGNO_AND"] = 55] = "SIGNO_AND";
+    Tipo[Tipo["SIGNO_OR"] = 56] = "SIGNO_OR";
+    Tipo[Tipo["SIGNO_NOT"] = 57] = "SIGNO_NOT";
+    Tipo[Tipo["SIGNO_XOR"] = 58] = "SIGNO_XOR";
+    Tipo[Tipo["DESCONOCIDO"] = 59] = "DESCONOCIDO";
+    Tipo[Tipo["ULTIMO"] = 60] = "ULTIMO";
 })(Tipo = exports.Tipo || (exports.Tipo = {}));
 class Token {
     constructor(tipo, auxLex, fila, columna) {
@@ -131,9 +131,6 @@ class Token {
                 break;
             case Tipo.RESERVADA_MAIN:
                 nombreToken = "Reservada_Main";
-                break;
-            case Tipo.RESERVADA_NEW:
-                nombreToken = "Reservada_New";
                 break;
             case Tipo.RESERVADA_OUT:
                 nombreToken = "Reservada_Out";
@@ -266,6 +263,9 @@ class Token {
                 break;
             case Tipo.SIGNO_XOR:
                 nombreToken = "Signo_XOR";
+                break;
+            case Tipo.ULTIMO:
+                nombreToken = "Ultimo";
                 break;
             default:
                 nombreToken = "Desconocido";
