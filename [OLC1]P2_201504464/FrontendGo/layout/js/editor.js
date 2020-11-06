@@ -1,11 +1,16 @@
 // Retrieve Elements
 const consoleLogList1 = document.querySelector(".editor__console-logs1");
-const executeCodeBtn = document.querySelector('.editor__run');
+const consoleLogList2 = document.querySelector(".editor__console-logs2");
+const executeCodeBtnJS = document.querySelector('.editor__runJs');
+const executeCodeBtnPY = document.querySelector('.editor__runPy');
 const inputFile = document.querySelector('input[type="file"]');
 const downloadFile = document.querySelector('input[name="downloadFile"]');
 const downloadJavascript = document.querySelector('input[name="downloadJavascript"]');
-const tableError = document.querySelector('.tableError');
-const tableToken = document.querySelector('.tableToken');
+const downloadPython = document.querySelector('input[name="downloadPython"]');
+const tableErrorJS = document.querySelector('.tableErrorJS');
+const tableTokenJS = document.querySelector('.tableTokenJS');
+const tableErrorPY = document.querySelector('.tableErrorPY');
+const tableTokenPY = document.querySelector('.tableTokenPY');
 //const resetCodeBtn = document.querySelector('.editor__reset');
 
 // Setup Ace
@@ -13,13 +18,16 @@ let codeEditor = ace.edit("editorCode");
 // Variables
 var nameCurrentFile = "";
 let traductionJS = "";
+let traductionPY = "";
 let dot = "";
 let listaTJS = [];
 let listaEJS = [];
+let listaTPY = [];
+let listaEPY = [];
 
 /*************************APLICATION INIT*********************************/
 let editorLib = {
-    clearConsoleScreen() {
+    clearConsoleScreenJS() {
         //consoleMessages.length = 0;
 
         // Remove all elements in the log list
@@ -28,22 +36,40 @@ let editorLib = {
         }
 
         // Remove all elements in table list
-        let i = tableError.rows.length;
+        let i = tableErrorJS.rows.length;
         while (i > 1) {
             i--;
-            tableError.deleteRow(i);
+            tableErrorJS.deleteRow(i);
         }
 
-        i = tableToken.rows.length;
+        i = tableTokenJS.rows.length;
         while (i > 1) {
             i--;
-            tableToken.deleteRow(i);
+            tableTokenJS.deleteRow(i);
         }
 
         // Remove the AST graph
         d3.select("#graph").graphviz().renderDot('digraph G{}');
     },
-    printToConsole() {
+    clearConsoleScreenPY() {
+        // Remove all elements in the log list
+        while (consoleLogList2.firstChild) {
+            consoleLogList2.removeChild(consoleLogList2.firstChild);
+        }
+        // Remove all elements in table list
+        let i = tableErrorPY.rows.length;
+        while (i > 1) {
+            i--;
+            tableErrorPY.deleteRow(i);
+        }
+
+        i = tableTokenPY.rows.length;
+        while (i > 1) {
+            i--;
+            tableTokenPY.deleteRow(i);
+        }
+    },
+    printToConsoleJS() {
         let conteo = 1;
         listaEJS.forEach(log => {
             let rowError = conteo.toString() + " -- " + log.caracterError + " -- T:" + log.tipoTokenErrorEnString + " -- D:" + log.descripcionError;
@@ -59,7 +85,23 @@ let editorLib = {
             conteo++;
         });
     },
-    runResponse(data) {
+    printToConsolePY() {
+        let conteo = 1;
+        listaEPY.forEach(log => {
+            let rowError = conteo.toString() + " -- " + log.caracterError + " -- T:" + log.tipoTokenErrorEnString + " -- D:" + log.descripcionError;
+            rowError += " -- f:" + log.filaError + " -- c:" + log.columnaError;
+            const newLogItem = document.createElement('li');
+            const newLogText = document.createElement('pre');
+
+            newLogText.textContent = rowError;
+
+            newLogItem.appendChild(newLogText);
+
+            consoleLogList2.appendChild(newLogItem);
+            conteo++;
+        });
+    },
+    runResponseJS(data) {
 
         listaTJS = data[0].listaToken;
         listaEJS = data[0].listaErrores;
@@ -68,9 +110,9 @@ let editorLib = {
 
         let conteo = 1;
 
-        if (tableError) {
+        if (tableErrorJS) {
             listaEJS.forEach(tokenE => {
-                let newRow = tableError.insertRow(tableError.rows.length);
+                let newRow = tableErrorJS.insertRow(tableErrorJS.rows.length);
                 let no = newRow.insertCell(0);
                 let lexema = newRow.insertCell(1);
                 let tipo = newRow.insertCell(2);
@@ -88,9 +130,9 @@ let editorLib = {
         }
 
         conteo = 1;
-        if (tableToken) {
+        if (tableTokenJS) {
             listaTJS.forEach(token => {
-                let newRow = tableToken.insertRow(tableToken.rows.length);
+                let newRow = tableTokenJS.insertRow(tableTokenJS.rows.length);
                 let no = newRow.insertCell(0);
                 let lexema = newRow.insertCell(1);
                 let tipo = newRow.insertCell(2);
@@ -107,10 +149,10 @@ let editorLib = {
 
         /** SI LA LISTA DE ERRORES CONTIENE ELEMENTOS NO SE TRADUCE NI SE MUESTRA EL GRAFO **/
         if (listaEJS.length > 0) {
-            alert("No se pudo realizar la traduccion, existen errores!");
-            
+            alert("No se pudo realizar la traduccion a Javascript, existen errores!");
+
             // Print to the console
-            editorLib.printToConsole();
+            editorLib.printToConsoleJS();
 
             // Remove the AST graph
             d3.select("#graph").graphviz().renderDot('digraph G{}');
@@ -122,12 +164,69 @@ let editorLib = {
             // Print the AST graph
             d3.select("#graph").graphviz().renderDot(dot);
 
-            alert("Traduccion exitosa!");
+            alert("Traduccion a Javascript exitosa!");
+        }
+    },
+    runResponsePY(data) {
+
+        listaTPY = data[0].listaToken;
+        listaEPY = data[0].listaErrores;
+        traductionPY = "";
+        let conteo = 1;
+
+        if (tableErrorPY) {
+            listaEPY.forEach(tokenE => {
+                let newRow = tableErrorPY.insertRow(tableErrorPY.rows.length);
+                let no = newRow.insertCell(0);
+                let lexema = newRow.insertCell(1);
+                let tipo = newRow.insertCell(2);
+                let descripcion = newRow.insertCell(3);
+                let linea = newRow.insertCell(4);
+                let columna = newRow.insertCell(5);
+                no.innerHTML = conteo.toString();
+                lexema.innerHTML = tokenE.caracterError;
+                tipo.innerHTML = tokenE.tipoTokenErrorEnString;
+                descripcion.innerHTML = tokenE.descripcionError;
+                linea.innerHTML = tokenE.filaError.toString();
+                columna.innerHTML = tokenE.columnaError.toString();
+                conteo++;
+            });
+        }
+
+        conteo = 1;
+        if (tableTokenPY) {
+            listaTPY.forEach(token => {
+                let newRow = tableTokenPY.insertRow(tableTokenPY.rows.length);
+                let no = newRow.insertCell(0);
+                let lexema = newRow.insertCell(1);
+                let tipo = newRow.insertCell(2);
+                let linea = newRow.insertCell(3);
+                let columna = newRow.insertCell(4);
+                no.innerHTML = conteo.toString();
+                lexema.innerHTML = token.lexema;
+                tipo.innerHTML = token.tipoTokenEnString;
+                linea.innerHTML = token.filaToken.toString();
+                columna.innerHTML = token.columnaToken.toString();
+                conteo++;
+            });
+        }
+
+        /** SI LA LISTA DE ERRORES CONTIENE ELEMENTOS NO SE TRADUCE **/
+        if (listaEPY.length > 0) {
+            alert("No se pudo realizar la traduccion a Python, existen errores!");
+
+            // Print to the console
+            editorLib.printToConsolePY();
+        } else {
+            /** DE LO CONTRARIO SE TRADUCE EL CODIGO PARA DESCARGARLO **/
+            traductionPY = data[0].traduccion;
+
+            alert("Traduccion a Python exitosa!");
         }
     },
     init() {
         // Configure Ace
-        
+
         // Theme
         codeEditor.setTheme("ace/theme/dracula");
 
@@ -145,10 +244,10 @@ let editorLib = {
 }
 /**************************APLICATION INIT*********************************/
 
-/*************************REQUEST ANALYSIS*********************************/
-executeCodeBtn.addEventListener('click', () => {
+/********************REQUEST ANALYSIS WITH JISON***************************/
+executeCodeBtnJS.addEventListener('click', () => {
     // Clear console message
-    editorLib.clearConsoleScreen();
+    editorLib.clearConsoleScreenJS();
 
     // Get input from the code editor
     const userCode = codeEditor.getValue();
@@ -161,27 +260,58 @@ executeCodeBtn.addEventListener('click', () => {
     }*/
 
     if (userCode != "") {
-        let nodeUrl = "http://localhost:5000/analizar";
+        let nodeUrlJS = "http://localhost:5000/analizar";
 
-        $.post(nodeUrl,
+        $.post(nodeUrlJS,
             {
                 code: userCode
             },
             function (data, status) {
                 if (status.toString() == "success") {
                     //console.log(data);
-                    editorLib.runResponse(data);
+                    editorLib.runResponseJS(data);
                 } else {
                     alert("Error estado de conexion: " + status);
                 }
-            })
+            });
 
     } else {
         alert("Editor vacio, ingrese contenido");
     }
 
 });
-/*************************REQUEST ANALYSIS*********************************/
+/********************REQUEST ANALYSIS WITH JISON***************************/
+
+/********************REQUEST ANALYSIS WITH PAREA***************************/
+executeCodeBtnPY.addEventListener('click', () => {
+    // Clear console message
+    editorLib.clearConsoleScreenPY();
+
+    // Get input from the code editor
+    const userCode = codeEditor.getValue();
+
+    if (userCode != "") {
+        let nodeUrlPy = "http://localhost:4000/analizar";
+
+        $.post(nodeUrlPy,
+            {
+                code: userCode
+            },
+            function (data, status) {
+                if (status.toString() == "success") {
+                    //console.log(data);
+                    editorLib.runResponsePY(data);
+                } else {
+                    alert("Error estado de conexion: " + status);
+                }
+            });
+
+    } else {
+        alert("Editor vacio, ingrese contenido");
+    }
+
+});
+/********************REQUEST ANALYSIS WITH PAREA***************************/
 
 /******************************OPEN FILE***********************************/
 inputFile.addEventListener('change', function (e) {
@@ -200,7 +330,8 @@ inputFile.addEventListener('change', function (e) {
         codeEditor.setValue(fileContent);
         //console.log(reader);
         // Clear console message
-        editorLib.clearConsoleScreen();
+        editorLib.clearConsoleScreenJS();
+        editorLib.clearConsoleScreenPY();
     }
     reader.readAsText(inputFile.files[0])
 }, false)
@@ -254,12 +385,13 @@ downloadJavascript.addEventListener('click', () => {
     let text = traductionJS;
     if (text != "") {
         // Specify the name of the file to be saved
-        if (nameCurrentFile == "") {
-            nameCurrentFile = "newDownload.js"
+        let fileNameJS = nameCurrentFile;
+        if (fileNameJS == "") {
+            fileNameJS = "newDownload.js"
         }
         else {
-            nameCurrentFile = nameCurrentFile.replace(".java", "");
-            nameCurrentFile = nameCurrentFile + ".js";
+            fileNameJS = fileNameJS.replace(".java", "");
+            fileNameJS = fileNameJS + ".js";
         }
         //  create a new Blob (html5 magic) that contains the data from your editor
         var blob = new Blob([text], { type: 'text/plain' });
@@ -268,7 +400,7 @@ downloadJavascript.addEventListener('click', () => {
         //  supply the name of the file (from the var above).
         // you could create the name here but using a var
         // allows more flexability later.
-        link.download = nameCurrentFile;
+        link.download = fileNameJS;
         // provide text for the link. This will be hidden so you
         // can actually use anything you want.
         link.innerHTML = "Download File";
@@ -285,11 +417,56 @@ downloadJavascript.addEventListener('click', () => {
         link.click();
     }
     else {
-        alert("Traduzca un archivo para descargar!");
+        alert("Traduzca un archivo para descargar Javascript!");
     }
 })
 
 /*************DOWNLOAD FILE WITH TRANSLATION JAVASCRIPT********************/
+
+/*************DOWNLOAD FILE WITH TRANSLATION PYTHON********************/
+
+downloadPython.addEventListener('click', () => {
+    // specify the content of the file
+    let text = traductionPY;
+    if (text != "") {
+        // Specify the name of the file to be saved
+        let fileNamePY = nameCurrentFile;
+        if (fileNamePY == "") {
+            fileNamePY = "newDownload.py"
+        }
+        else {
+            fileNamePY = fileNamePY.replace(".java", "");
+            fileNamePY = fileNamePY + ".py";
+        }
+        //  create a new Blob (html5 magic) that contains the data from your editor
+        var blob = new Blob([text], { type: 'text/plain' });
+        // create a link for our script to 'click'
+        var link = document.createElement("a");
+        //  supply the name of the file (from the var above).
+        // you could create the name here but using a var
+        // allows more flexability later.
+        link.download = fileNamePY;
+        // provide text for the link. This will be hidden so you
+        // can actually use anything you want.
+        link.innerHTML = "Download File";
+        // Create the link Object.
+        link.href = window.URL.createObjectURL(blob);
+        // when link is clicked call a function to remove it from
+        // the DOM in case user wants to save a second file.
+        link.onclick = destroyClickedElement;
+        // make sure the link is hidden.
+        link.style.display = "none";
+        // add the link to the DOM
+        document.body.appendChild(link);
+        // click the new link
+        link.click();
+    }
+    else {
+        alert("Traduzca un archivo para descargar Python!");
+    }
+})
+
+/*************DOWNLOAD FILE WITH TRANSLATION PYTHON********************/
 
 function destroyClickedElement(event) {
     // remove the link from the DOM
