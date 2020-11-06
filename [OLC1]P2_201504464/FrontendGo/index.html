@@ -54,6 +54,12 @@
                                         style="display: none;" />
                                 </label>
                             </a>
+                            <a class="dropdown-item">
+                                <label>
+                                    Descargar Python<input type="button" name="downloadPython"
+                                        style="display: none;" />
+                                </label>
+                            </a>
                         </div>
                     </li>
                     <li>
@@ -85,16 +91,17 @@
         </div>
         <div class="editor__footer">
             <div class="editor__footer--btn">
-                <!--<button type="button" class="editor__btn editor__run">Run ></button>-->
-                <button type="button" class="btn btn-dark editor__run">Traducir ></button>
+                <button type="button" class="btn btn-dark editor__runJs">Traducir a Javascript ></button>
+                <div>*------*</div>
+                <button type="button" class="btn btn-dark editor__runPy">Traducir a Python ></button>
             </div>
         </div>
     </div>
     <!---------------------------------------------EDITOR----------------------------------------------------->
     <!----------------------------------------TABLA DE ERRORES------------------------------------------------>
-    <div class="table-responsive rounded bg-dark">
-        <h5 style="color: crimson;">TABLA DE ERRORES------------------------------------------------</h5>
-        <table class="table tableError" id="tablaErrores" style="color:white;">
+    <h5 style="color: crimson;">TABLA DE ERRORES CON JISON------------------------------------------------</h5>
+    <div class="table-responsive rounded bg-dark" style="overflow-y: auto; height: 200px;">
+        <table class="table tableErrorJS" id="tablaErrores" style="color:white;">
             <thead>
                 <tr>
                     <th style="width:5%">No.</th>
@@ -112,9 +119,9 @@
     </div>
     <!----------------------------------------TABLA DE ERRORES------------------------------------------------>
     <!-----------------------------------------TABLA DE TOKENS------------------------------------------------>
-    <div class="table-responsive rounded bg-dark">
-        <h5 style="color: forestgreen;">TABLA DE TOKENS------------------------------------------------</h5>
-        <table class="table tableToken" id="tablaTokens" style="color:white;">
+    <h5 style="color: forestgreen;">TABLA DE TOKENS CON JISON------------------------------------------------</h5>
+    <div class="table-responsive rounded bg-dark" style="overflow-y: auto; height: 200px;">
+        <table class="table tableTokenJS" id="tablaTokens" style="color:white;">
             <thead>
                 <tr>
                     <th style="width:10%">No.</th>
@@ -129,6 +136,47 @@
             </tbody>
         </table>
     </div>
+
+    <!-----------------------------------------TABLA DE TOKENS------------------------------------------------>
+    <!----------------------------------------TABLA DE ERRORES------------------------------------------------>
+    <h5 style="color: crimson;">TABLA DE ERRORES CON PAREA------------------------------------------------</h5>
+    <div class="table-responsive rounded bg-dark" style="overflow-y: auto; height: 200px;">
+        <table class="table tableErrorPY" id="tablaErrores2" style="color:white;">
+            <thead>
+                <tr>
+                    <th style="width:5%">No.</th>
+                    <th style="width:20%">Caracter</th>
+                    <th style="width:20%">Tipo de Error</th>
+                    <th style="width:40%">Descripción</th>
+                    <th style="width:5%">Fila</th>
+                    <th style="width:5%">Columna</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    <!----------------------------------------TABLA DE ERRORES------------------------------------------------>
+    <!-----------------------------------------TABLA DE TOKENS------------------------------------------------>
+    <h5 style="color: forestgreen;">TABLA DE TOKENS CON PAREA------------------------------------------------</h5>
+    <div class="table-responsive rounded bg-dark" style="overflow-y: auto; height: 200px;">
+        <table class="table tableTokenPY" id="tablaTokens2" style="color:white;">
+            <thead>
+                <tr>
+                    <th style="width:10%">No.</th>
+                    <th style="width:40%">Lexema/Token</th>
+                    <th style="width:30%">Tipo de Token</th>
+                    <th style="width:10%">Fila</th>
+                    <th style="width:10%">Columna</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+
     <!-----------------------------------------TABLA DE TOKENS------------------------------------------------>
 
     <div id="graph" style="text-align: center;">
