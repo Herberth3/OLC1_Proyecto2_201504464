@@ -254,7 +254,7 @@ SENTENCIAS
     : DECLARATION punto_y_coma                                  {$$ = $1; }
     | ASIGNATION punto_y_coma                                   {$$ = $1; }
     | OTHERS_ASIGNATIONS punto_y_coma                           {$$ = $1; }
-    | identificador BLOCK_PARAMETROS_PRIMITIVOS punto_y_coma    {$$ = new Identifier($1, $2, Type_Operation.LLAMADA_METODO, true, this._$.first_column);}
+    | identificador BLOCK_PARAMETROS_EXPRESSIONS punto_y_coma   {$$ = new Identifier($1, $2, Type_Operation.LLAMADA_METODO, true, this._$.first_column);}
     | FOR                                                       {$$ = $1; }
     | WHILE                                                     {$$ = $1; }
     | DO_WHILE                                                  {$$ = $1; }
@@ -263,14 +263,14 @@ SENTENCIAS
     | PRINT                                                     {$$ = $1; }
 ;
 
-BLOCK_PARAMETROS_PRIMITIVOS
-    : parentesis_izq LIST_PARAMETROS_PRIMITIVOS parentesis_der  {$$ = $2; }
+BLOCK_PARAMETROS_EXPRESSIONS
+    : parentesis_izq LIST_PARAMETROS_EXPRESSION parentesis_der  {$$ = $2; }
     | parentesis_izq parentesis_der                             {$$ = []; }
 ;
 
-LIST_PARAMETROS_PRIMITIVOS
-    : LIST_PARAMETROS_PRIMITIVOS coma PRIMITIVOS    {$1.push($3); $$ = $1; }
-    | PRIMITIVOS                                    {$$ = [$1]; }
+LIST_PARAMETROS_EXPRESSION
+    : LIST_PARAMETROS_EXPRESSION coma EXPRESION    {$1.push($3); $$ = $1; }
+    | EXPRESION                                    {$$ = [$1]; }
 ;
 /******************************************************************************************************************/
 
@@ -361,7 +361,7 @@ EXPRESION
     | EXPRESION s_pos_decremento                    {$$ = new Aritmetica($1, Type_Operation.POS_DECREMENTO, null); }
     | parentesis_izq EXPRESION parentesis_der       {$$ = new Aritmetica($2, Type_Operation.PARENTESIS, null); }
 
-    | identificador BLOCK_PARAMETROS_PRIMITIVOS     {$$ = new Identifier($1, $2, Type_Operation.LLAMADA_METODO,false, this._$.first_column); }
+    | identificador BLOCK_PARAMETROS_EXPRESSIONS    {$$ = new Identifier($1, $2, Type_Operation.LLAMADA_METODO,false, this._$.first_column); }
     | PRIMITIVOS                                    {$$ = $1}
 ;
 

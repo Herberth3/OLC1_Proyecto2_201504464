@@ -218,7 +218,7 @@ export class Analizador_Sintactico {
             this.ASIGNATION_P();
         } else if (this.preanalisis.getTipo() == Tipo.PARENTESIS_IZQ) {
             this.match(Tipo.PARENTESIS_IZQ);
-            this.LIST_PARAMETROS_PRIMITIVOS();
+            this.LIST_PARAMETROS_EXPRESSION();
             this.match(Tipo.PARENTESIS_DER);
         } else {
             /** ERROR **/
@@ -234,25 +234,26 @@ export class Analizador_Sintactico {
         }
     }
 
-    private LIST_PARAMETROS_PRIMITIVOS() {
+    private LIST_PARAMETROS_EXPRESSION() {
         if (this.preanalisis.getTipo() == Tipo.NUMERO_ENTERO || this.preanalisis.getTipo() == Tipo.NUMERO_DECIMAL
             || this.preanalisis.getTipo() == Tipo.RESERVADA_FALSE || this.preanalisis.getTipo() == Tipo.RESERVADA_TRUE
             || this.preanalisis.getTipo() == Tipo.CADENA_STRING || this.preanalisis.getTipo() == Tipo.CADENA_CHAR
-            || this.preanalisis.getTipo() == Tipo.IDENTIFICADOR) {
-            this.PRIMITIVOS();
+            || this.preanalisis.getTipo() == Tipo.IDENTIFICADOR || this.preanalisis.getTipo() == Tipo.SIGNO_MENOS
+            || this.preanalisis.getTipo() == Tipo.SIGNO_NOT || this.preanalisis.getTipo() == Tipo.PARENTESIS_IZQ) {
+            this.EXPRESSIONS();
         }
     }
 
-    private PRIMITIVOS() {
-        this.PRIMITIVO();
-        this.PRIMITIVOS_P();
+    private EXPRESSIONS() {
+        this.EXPRESSION();
+        this.EXPRESSIONS_P();
     }
 
-    private PRIMITIVOS_P() {
+    private EXPRESSIONS_P() {
         if (this.preanalisis.getTipo() == Tipo.COMA) {
             this.match(Tipo.COMA);
-            this.PRIMITIVO();
-            this.PRIMITIVOS_P();
+            this.EXPRESSION();
+            this.EXPRESSIONS_P();
         }
     }
 
@@ -686,7 +687,7 @@ export class Analizador_Sintactico {
     private INC_DEC_CALL_METHOD() {
         if (this.preanalisis.getTipo() == Tipo.PARENTESIS_IZQ) {
             this.match(Tipo.PARENTESIS_IZQ);
-            this.LIST_PARAMETROS_PRIMITIVOS();
+            this.LIST_PARAMETROS_EXPRESSION();
             this.match(Tipo.PARENTESIS_DER);
         } else if (this.preanalisis.getTipo() == Tipo.SIGNO_POS_INCREMENTO) {
             this.match(Tipo.SIGNO_POS_INCREMENTO);
@@ -697,6 +698,13 @@ export class Analizador_Sintactico {
 
     /***********************************************************************************/
     private match(p: Tipo) {
+        if(this.preanalisis.getTipo() == Tipo.COMENTARIO_BLOQUE || this.preanalisis.getTipo() == Tipo.COMENTARIO_LINEA){
+            while (this.preanalisis.getTipo() == Tipo.COMENTARIO_BLOQUE || this.preanalisis.getTipo() == Tipo.COMENTARIO_LINEA) {
+                this.numPreanalisis += 1;
+                this.preanalisis = this.listaTokens[this.numPreanalisis];
+            }
+        }
+
         if (this.errorSintactico) {
             if (this.numPreanalisis < this.listaTokens.length - 1) {
                 if (this.preanalisis.getTipo() == Tipo.PUNTO_Y_COMA || this.preanalisis.getTipo() == Tipo.LLAVE_DER) {

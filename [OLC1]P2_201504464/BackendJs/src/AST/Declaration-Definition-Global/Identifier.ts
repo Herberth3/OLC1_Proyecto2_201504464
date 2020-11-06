@@ -123,7 +123,7 @@ export class Identifier extends Template_Instruccion {
 
                         t_g.id_Nodo++;
                         nodoPadre_A = "nodo" + t_g.id_Nodo;
-                        dot += nodoPadre_A + "[label=\"LIST_PRIMITIVOS\"]\n";
+                        dot += nodoPadre_A + "[label=\"LIST_EXPRESSION\"]\n";
 
                         if (esPrimero) {
                             dot += nodoPadre_G + " -> " + nodoPadre_A + "\n";
@@ -132,6 +132,9 @@ export class Identifier extends Template_Instruccion {
                             dot += nodoHijo + " -> " + nodoPadre_A + "\n";
                         }
 
+                        dot += this.recolectorDotHijo(t_g, nodoPadre_A, "EXPRESION");
+
+                        /** RECOLECTAR EXPRESION **/
                         dot += element.recolectarDot(t_g);
 
                         nodoHijo = nodoPadre_A;

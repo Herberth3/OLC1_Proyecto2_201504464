@@ -101,7 +101,7 @@ class Identifier extends template_Instruccion_1.Template_Instruccion {
                     this.parametros.forEach(element => {
                         t_g.id_Nodo++;
                         nodoPadre_A = "nodo" + t_g.id_Nodo;
-                        dot += nodoPadre_A + "[label=\"LIST_PRIMITIVOS\"]\n";
+                        dot += nodoPadre_A + "[label=\"LIST_EXPRESSION\"]\n";
                         if (esPrimero) {
                             dot += nodoPadre_G + " -> " + nodoPadre_A + "\n";
                             esPrimero = false;
@@ -109,6 +109,8 @@ class Identifier extends template_Instruccion_1.Template_Instruccion {
                         else {
                             dot += nodoHijo + " -> " + nodoPadre_A + "\n";
                         }
+                        dot += this.recolectorDotHijo(t_g, nodoPadre_A, "EXPRESION");
+                        /** RECOLECTAR EXPRESION **/
                         dot += element.recolectarDot(t_g);
                         nodoHijo = nodoPadre_A;
                     });

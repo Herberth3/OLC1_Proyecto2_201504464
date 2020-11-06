@@ -204,7 +204,7 @@ class Analizador_Sintactico {
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.PARENTESIS_IZQ) {
             this.match(Token_1.Tipo.PARENTESIS_IZQ);
-            this.LIST_PARAMETROS_PRIMITIVOS();
+            this.LIST_PARAMETROS_EXPRESSION();
             this.match(Token_1.Tipo.PARENTESIS_DER);
         }
         else {
@@ -220,23 +220,24 @@ class Analizador_Sintactico {
             }
         }
     }
-    LIST_PARAMETROS_PRIMITIVOS() {
+    LIST_PARAMETROS_EXPRESSION() {
         if (this.preanalisis.getTipo() == Token_1.Tipo.NUMERO_ENTERO || this.preanalisis.getTipo() == Token_1.Tipo.NUMERO_DECIMAL
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_FALSE || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_TRUE
             || this.preanalisis.getTipo() == Token_1.Tipo.CADENA_STRING || this.preanalisis.getTipo() == Token_1.Tipo.CADENA_CHAR
-            || this.preanalisis.getTipo() == Token_1.Tipo.IDENTIFICADOR) {
-            this.PRIMITIVOS();
+            || this.preanalisis.getTipo() == Token_1.Tipo.IDENTIFICADOR || this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_MENOS
+            || this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_NOT || this.preanalisis.getTipo() == Token_1.Tipo.PARENTESIS_IZQ) {
+            this.EXPRESSIONS();
         }
     }
-    PRIMITIVOS() {
-        this.PRIMITIVO();
-        this.PRIMITIVOS_P();
+    EXPRESSIONS() {
+        this.EXPRESSION();
+        this.EXPRESSIONS_P();
     }
-    PRIMITIVOS_P() {
+    EXPRESSIONS_P() {
         if (this.preanalisis.getTipo() == Token_1.Tipo.COMA) {
             this.match(Token_1.Tipo.COMA);
-            this.PRIMITIVO();
-            this.PRIMITIVOS_P();
+            this.EXPRESSION();
+            this.EXPRESSIONS_P();
         }
     }
     /***********************************************************************************/
@@ -654,7 +655,7 @@ class Analizador_Sintactico {
     INC_DEC_CALL_METHOD() {
         if (this.preanalisis.getTipo() == Token_1.Tipo.PARENTESIS_IZQ) {
             this.match(Token_1.Tipo.PARENTESIS_IZQ);
-            this.LIST_PARAMETROS_PRIMITIVOS();
+            this.LIST_PARAMETROS_EXPRESSION();
             this.match(Token_1.Tipo.PARENTESIS_DER);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_POS_INCREMENTO) {
@@ -666,6 +667,12 @@ class Analizador_Sintactico {
     }
     /***********************************************************************************/
     match(p) {
+        if (this.preanalisis.getTipo() == Token_1.Tipo.COMENTARIO_BLOQUE || this.preanalisis.getTipo() == Token_1.Tipo.COMENTARIO_LINEA) {
+            while (this.preanalisis.getTipo() == Token_1.Tipo.COMENTARIO_BLOQUE || this.preanalisis.getTipo() == Token_1.Tipo.COMENTARIO_LINEA) {
+                this.numPreanalisis += 1;
+                this.preanalisis = this.listaTokens[this.numPreanalisis];
+            }
+        }
         if (this.errorSintactico) {
             if (this.numPreanalisis < this.listaTokens.length - 1) {
                 if (this.preanalisis.getTipo() == Token_1.Tipo.PUNTO_Y_COMA || this.preanalisis.getTipo() == Token_1.Tipo.LLAVE_DER) {
