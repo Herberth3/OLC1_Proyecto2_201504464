@@ -12,27 +12,11 @@ class Parameter extends template_Instruccion_1.Template_Instruccion {
         this.tipo = tipo;
         this.identificador = id;
     }
-    traductorJS() {
+    traductorPY() {
         return this.identificador;
     }
-    calcularEspaciadoJS() {
+    calcularEspaciadoPY() {
         throw new Error("Method not implemented.");
-    }
-    recolectarDot(t_g) {
-        let dot = "";
-        let nodoPadre_G = "nodo" + t_g.id_Nodo;
-        dot += this.recolectorDotHijo(t_g, nodoPadre_G, this.tipo);
-        dot += this.recolectorDotHijo(t_g, nodoPadre_G, this.identificador);
-        return dot;
-    }
-    recolectorDotHijo(t_g, nodoPadre_G, nombreHijo) {
-        let dot = "";
-        let nodoHijo = "";
-        t_g.id_Nodo++;
-        nodoHijo = "nodo" + t_g.id_Nodo;
-        dot += nodoHijo + "[label=\"" + nombreHijo + "\"]\n";
-        dot += nodoPadre_G + " -> " + nodoHijo + "\n";
-        return dot;
     }
 }
 exports.Parameter = Parameter;

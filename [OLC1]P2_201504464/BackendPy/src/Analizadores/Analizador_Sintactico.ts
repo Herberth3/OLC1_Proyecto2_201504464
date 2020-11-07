@@ -2,7 +2,12 @@ import { Abstrac_Sintactic_Tree } from "../AST/Abstrac_Sintactic_Tree";
 import { Asignation } from "../AST/Declaration-Definition-Global/Asignation";
 import { Declaration } from "../AST/Declaration-Definition-Global/Declaration";
 import { Identifier } from "../AST/Declaration-Definition-Global/Identifier";
+import { Method } from "../AST/Declaration-Definition-Global/Method";
+import { Parameter } from "../AST/Declaration-Definition-Global/Parameter";
 import { Class_Interface } from "../AST/Instructions/Class_Interface";
+import { Print } from "../AST/Sentences/Print";
+import { Return_Continue_Break } from "../AST/Sentences/Return_Continue_Break";
+import { While } from "../AST/Sentences/While";
 import { Template_Instruccion } from "../AST/Template_Instruccion";
 import { Type_Operation } from "../AST/Types";
 import { Tipo, Token } from "./Token";
@@ -25,6 +30,14 @@ export class Analizador_Sintactico {
     private lista_Decla_Asign: Array<Template_Instruccion>;
     /** LISTA QUE ALMACENA LAS DECLARACIONES-GLOBALES DENTRO DE UNA CLASE **/
     private lista_Declaraciones_Global: Array<Template_Instruccion>;
+    /** LISTA QUE ALMACENA LOS PARAMETROS DE LOS METODOS **/
+    private lista_Parametros: Array<Template_Instruccion>;
+    /** LISTA QUE ALMACENA LAS SENTENCIAS DENTRO DE UN METODO **/
+    private lista_Sentencias: Array<Template_Instruccion>;
+    /** LISTA QUE ALMACENA LA DEFINICIONES DE FUNCION PARA LAS INTERFACES **/
+    private lista_Definition_F: Array<Template_Instruccion>;
+    /** LISTA QUE ALMACENA LAS SENTENCIAS DENTRO DE LOS CICLOS **/
+    private lista_Bloque_Ciclo: Array<Template_Instruccion>;
     /** RECOLECTOR DE EXPRESION **/
     private expresion: string = "";
 
@@ -32,6 +45,10 @@ export class Analizador_Sintactico {
         this.lista_Instrucciones = [];
         this.lista_Decla_Asign = [];
         this.lista_Declaraciones_Global = [];
+        this.lista_Parametros = [];
+        this.lista_Sentencias = [];
+        this.lista_Definition_F = [];
+        this.lista_Bloque_Ciclo = [];
     }
 
     parsear(lista: Array<Token>, listE: Array<Token_Error>): Abstrac_Sintactic_Tree {
@@ -65,6 +82,7 @@ export class Analizador_Sintactico {
         this.match(Tipo.RESERVADA_PUBLIC);
         instruccion = this.INSTRUCTIONS_P();
         this.lista_Declaraciones_Global = [];
+        this.lista_Definition_F = [];
 
         /****************************************/
         this.lista_Instrucciones.push(instruccion);
@@ -93,7 +111,9 @@ export class Analizador_Sintactico {
             this.match(Tipo.IDENTIFICADOR);
             this.match(Tipo.LLAVE_IZQ);
             this.LIST_DECLARATION_GLOBAL();
+
             arrayDecla = this.lista_Declaraciones_Global;
+
             this.match(Tipo.LLAVE_DER);
         } else if (this.preanalisis.getTipo() == Tipo.RESERVADA_INTERFACE) {
             cla_int = this.preanalisis.getLexema();
@@ -103,6 +123,9 @@ export class Analizador_Sintactico {
             this.match(Tipo.IDENTIFICADOR);
             this.match(Tipo.LLAVE_IZQ);
             this.DEFINITION_FUNCTIONS();
+
+            arrayDecla = this.lista_Definition_F;
+
             this.match(Tipo.LLAVE_DER);
         } else {
             /** ERROR **/
@@ -164,7 +187,11 @@ export class Analizador_Sintactico {
 
             this.match(Tipo.PUNTO_Y_COMA);
         } else if (this.preanalisis.getTipo() == Tipo.RESERVADA_PUBLIC) {
-            this.METHOD();
+
+            declaracion_g = this.METHOD();
+            this.lista_Parametros = [];
+            this.lista_Sentencias = [];
+
         } else {
             /** ERROR **/
             if (this.errorSintactico == false) {
@@ -186,14 +213,32 @@ export class Analizador_Sintactico {
     }
 
     private DEFINITION_FUNCTIONS() {
+        /*********************************/
+        let columnD = 0;
+        let tipo = "";
+        let idDefi = "";
+        let defiFunt: Template_Instruccion;
+        /*********************************/
+        columnD = this.preanalisis.getColumna();
         if (this.preanalisis.getTipo() == Tipo.RESERVADA_PUBLIC) {
             this.match(Tipo.RESERVADA_PUBLIC);
+            tipo = this.preanalisis.getLexema();
             this.TYPE_METHOD();
+            idDefi = this.preanalisis.getLexema();
             this.match(Tipo.IDENTIFICADOR);
             this.match(Tipo.PARENTESIS_IZQ);
             this.LIST_PARAMETROS();
             this.match(Tipo.PARENTESIS_DER);
             this.match(Tipo.PUNTO_Y_COMA);
+
+            defiFunt = new Method("public", tipo, idDefi, this.lista_Parametros, null, columnD);
+
+            /****************/
+            this.lista_Parametros = [];
+            /****************/
+
+            this.lista_Definition_F.push(defiFunt);
+
             this.DEFINITION_FUNCTIONS();
         }
     }
@@ -328,19 +373,30 @@ export class Analizador_Sintactico {
         }
     }
 
-    private ASIGNATION_LOCAL() {
+    private ASIGNATION_LOCAL(): Template_Instruccion {
         this.match(Tipo.IDENTIFICADOR);
-        this.ASIGNATION_LOCAL_P();
+        return this.ASIGNATION_LOCAL_P();
     }
 
-    private ASIGNATION_LOCAL_P() {
+    private ASIGNATION_LOCAL_P(): Template_Instruccion {
+        /********************************/
+        let idAsign = "";
+        let columnAsign = 0;
+        /********************************/
+        idAsign = this.listaTokens[this.numPreanalisis - 1].getLexema();
+        columnAsign = this.listaTokens[this.numPreanalisis - 1].getColumna();
         if (this.preanalisis.getTipo() == Tipo.SIGNO_IGUAL || this.preanalisis.getTipo() == Tipo.SIGNO_POS_INCREMENTO
             || this.preanalisis.getTipo() == Tipo.SIGNO_POS_DECREMENTO) {
-            this.ASIGNATION_P();
+
+            return this.ASIGNATION_P();
+
         } else if (this.preanalisis.getTipo() == Tipo.PARENTESIS_IZQ) {
             this.match(Tipo.PARENTESIS_IZQ);
             this.LIST_PARAMETROS_EXPRESSION();
             this.match(Tipo.PARENTESIS_DER);
+
+            return new Identifier(idAsign, this.expresion, Type_Operation.LLAMADA_METODO, true, columnAsign);
+
         } else {
             /** ERROR **/
             if (this.errorSintactico == false) {
@@ -352,6 +408,7 @@ export class Analizador_Sintactico {
             else {
                 this.match(Tipo.PUNTO_Y_COMA);
             }
+            return new Declaration("", [], 0);
         }
     }
 
@@ -382,12 +439,18 @@ export class Analizador_Sintactico {
 
     /***********************************************************************************/
 
-    private METHOD() {
+    private METHOD(): Template_Instruccion {
         this.match(Tipo.RESERVADA_PUBLIC);
-        this.METHOD_P();
+        return this.METHOD_P();
     }
 
-    private METHOD_P() {
+    private METHOD_P(): Template_Instruccion {
+        /********************************/
+        let columnMethod = 0;
+        let tipo = "";
+        let idMethod = "";
+        /********************************/
+        columnMethod = this.listaTokens[this.numPreanalisis - 1].getColumna();
         if (this.preanalisis.getTipo() == Tipo.RESERVADA_STATIC) {
             this.match(Tipo.RESERVADA_STATIC);
             this.match(Tipo.RESERVADA_VOID);
@@ -399,13 +462,19 @@ export class Analizador_Sintactico {
             this.match(Tipo.RESERVADA_ARGS);
             this.match(Tipo.PARENTESIS_DER);
             this.BLOQUE_SENTENCIAS();
+
+            return new Method("public", "void", "main", null, this.lista_Sentencias, columnMethod);
         } else {
+            tipo = this.preanalisis.getLexema();
             this.TYPE_METHOD();
+            idMethod = this.preanalisis.getLexema();
             this.match(Tipo.IDENTIFICADOR);
             this.match(Tipo.PARENTESIS_IZQ);
             this.LIST_PARAMETROS();
             this.match(Tipo.PARENTESIS_DER);
             this.BLOQUE_SENTENCIAS();
+
+            return new Method("public", tipo, idMethod, this.lista_Parametros, this.lista_Sentencias, columnMethod);
         }
     }
 
@@ -426,21 +495,42 @@ export class Analizador_Sintactico {
     }
 
     private PARAMETROS() {
-        this.PARAMETRO();
+        /*********************/
+        let parametro: Template_Instruccion;
+        /*********************/
+        parametro = this.PARAMETRO();
+
+        this.lista_Parametros.push(parametro);
+
         this.PARAMETROS_P();
     }
 
     private PARAMETROS_P() {
+        /*********************/
+        let parametro: Template_Instruccion;
+        /*********************/
         if (this.preanalisis.getTipo() == Tipo.COMA) {
             this.match(Tipo.COMA);
-            this.PARAMETRO();
+
+            parametro = this.PARAMETRO();
+
+            this.lista_Parametros.push(parametro);
+
             this.PARAMETROS_P();
         }
     }
 
-    private PARAMETRO() {
+    private PARAMETRO(): Template_Instruccion {
+        /***************************/
+        let tipo = "";
+        let idParameter = "";
+        /***************************/
+        tipo = this.preanalisis.getLexema();
         this.TYPE_DATA();
+        idParameter = this.preanalisis.getLexema();
         this.match(Tipo.IDENTIFICADOR);
+
+        return new Parameter(tipo, idParameter);
     }
 
     private BLOQUE_SENTENCIAS() {
@@ -464,39 +554,79 @@ export class Analizador_Sintactico {
     /***********************************************************************************/
 
     private LIST_SENTENCIAS() {
+        /*****************************/
+        var sentencia_l: Template_Instruccion;
+        /*****************************/
         if (this.preanalisis.getTipo() == Tipo.RESERVADA_INT || this.preanalisis.getTipo() == Tipo.RESERVADA_BOOLEAN
             || this.preanalisis.getTipo() == Tipo.RESERVADA_DOUBLE || this.preanalisis.getTipo() == Tipo.RESERVADA_STRING
             || this.preanalisis.getTipo() == Tipo.RESERVADA_CHAR || this.preanalisis.getTipo() == Tipo.IDENTIFICADOR
             || this.preanalisis.getTipo() == Tipo.RESERVADA_FOR || this.preanalisis.getTipo() == Tipo.RESERVADA_WHILE
             || this.preanalisis.getTipo() == Tipo.RESERVADA_DO || this.preanalisis.getTipo() == Tipo.RESERVADA_IF
             || this.preanalisis.getTipo() == Tipo.RESERVADA_RETURN || this.preanalisis.getTipo() == Tipo.RESERVADA_SYSTEM) {
-            this.SENTENCIAS();
+
+            sentencia_l = this.SENTENCIAS();
+
+            /*****************************/
+            this.lista_Sentencias.push(sentencia_l);
+            /*****************************/
+
             this.LIST_SENTENCIAS();
         }
     }
 
-    private SENTENCIAS() {
+    private SENTENCIAS(): Template_Instruccion {
+        /*****************************/
+        var sentencia_l: Template_Instruccion;
+        /*****************************/
         if (this.preanalisis.getTipo() == Tipo.RESERVADA_INT || this.preanalisis.getTipo() == Tipo.RESERVADA_BOOLEAN
             || this.preanalisis.getTipo() == Tipo.RESERVADA_DOUBLE || this.preanalisis.getTipo() == Tipo.RESERVADA_STRING
             || this.preanalisis.getTipo() == Tipo.RESERVADA_CHAR) {
-            this.DECLARATION();
+
+            sentencia_l = this.DECLARATION();
+            this.lista_Decla_Asign = [];
+
             this.match(Tipo.PUNTO_Y_COMA);
         } else if (this.preanalisis.getTipo() == Tipo.IDENTIFICADOR) {
-            this.ASIGNATION_LOCAL();
+
+            sentencia_l = this.ASIGNATION_LOCAL();
+            /******************/
+            this.expresion = "";
+            /******************/
+
             this.match(Tipo.PUNTO_Y_COMA);
         } else if (this.preanalisis.getTipo() == Tipo.RESERVADA_FOR) {
+
             this.FOR();
+            sentencia_l = new Return_Continue_Break("", null, false, 1);
+
         } else if (this.preanalisis.getTipo() == Tipo.RESERVADA_WHILE) {
-            this.WHILE();
+
+            sentencia_l = this.WHILE();
+            this.lista_Bloque_Ciclo = [];
+            this.expresion = "";
+
         } else if (this.preanalisis.getTipo() == Tipo.RESERVADA_DO) {
+
             this.DO_WHILE();
+            sentencia_l = new Return_Continue_Break("", null, false, 1);
+
         } else if (this.preanalisis.getTipo() == Tipo.RESERVADA_IF) {
+
             this.IF();
+
+            sentencia_l = new Return_Continue_Break("", null, false, 1);
+
         } else if (this.preanalisis.getTipo() == Tipo.RESERVADA_RETURN) {
-            this.RETURN();
+
+            sentencia_l = this.RETURN();
+            this.expresion = "";
+
         } else if (this.preanalisis.getTipo() == Tipo.RESERVADA_SYSTEM) {
-            this.PRINT();
+
+            sentencia_l = this.PRINT();
+            this.expresion = "";
         }
+        return sentencia_l;
     }
 
     /***********************************************************************************/
@@ -532,11 +662,22 @@ export class Analizador_Sintactico {
     }
 
     private LIST_SENTENCIAS_CICLO() {
-        this.SENTENCIAS_CICLO();
+        /*****************************/
+        var sentencia_c: Template_Instruccion;
+        /*****************************/
+        sentencia_c = this.SENTENCIAS_CICLO();
+
+        /*****************************/
+        this.lista_Bloque_Ciclo.push(sentencia_c);
+        /*****************************/
+
         this.LIST_SENTENCIAS_CICLO_P();
     }
 
     private LIST_SENTENCIAS_CICLO_P() {
+        /*****************************/
+        var sentencia_c: Template_Instruccion;
+        /*****************************/
         if (this.preanalisis.getTipo() == Tipo.RESERVADA_INT || this.preanalisis.getTipo() == Tipo.RESERVADA_BOOLEAN
             || this.preanalisis.getTipo() == Tipo.RESERVADA_DOUBLE || this.preanalisis.getTipo() == Tipo.RESERVADA_STRING
             || this.preanalisis.getTipo() == Tipo.RESERVADA_CHAR || this.preanalisis.getTipo() == Tipo.IDENTIFICADOR
@@ -544,36 +685,57 @@ export class Analizador_Sintactico {
             || this.preanalisis.getTipo() == Tipo.RESERVADA_DO || this.preanalisis.getTipo() == Tipo.RESERVADA_IF
             || this.preanalisis.getTipo() == Tipo.RESERVADA_RETURN || this.preanalisis.getTipo() == Tipo.RESERVADA_SYSTEM
             || this.preanalisis.getTipo() == Tipo.RESERVADA_BREAK || this.preanalisis.getTipo() == Tipo.RESERVADA_CONTINUE) {
-            this.SENTENCIAS_CICLO();
+
+            sentencia_c = this.SENTENCIAS_CICLO();
+
+            /*****************************/
+            this.lista_Bloque_Ciclo.push(sentencia_c);
+            /*****************************/
+
             this.LIST_SENTENCIAS_CICLO_P();
         }
     }
 
-    private SENTENCIAS_CICLO() {
+    private SENTENCIAS_CICLO(): Template_Instruccion {
+        /*********************/
+        let columnS_C = 0;
+        /*********************/
+        columnS_C = this.preanalisis.getColumna();
         if (this.preanalisis.getTipo() == Tipo.RESERVADA_INT || this.preanalisis.getTipo() == Tipo.RESERVADA_BOOLEAN
             || this.preanalisis.getTipo() == Tipo.RESERVADA_DOUBLE || this.preanalisis.getTipo() == Tipo.RESERVADA_STRING
             || this.preanalisis.getTipo() == Tipo.RESERVADA_CHAR || this.preanalisis.getTipo() == Tipo.IDENTIFICADOR
             || this.preanalisis.getTipo() == Tipo.RESERVADA_FOR || this.preanalisis.getTipo() == Tipo.RESERVADA_WHILE
             || this.preanalisis.getTipo() == Tipo.RESERVADA_DO || this.preanalisis.getTipo() == Tipo.RESERVADA_IF
             || this.preanalisis.getTipo() == Tipo.RESERVADA_RETURN || this.preanalisis.getTipo() == Tipo.RESERVADA_SYSTEM) {
-            this.SENTENCIAS();
+            return this.SENTENCIAS();
         } else if (this.preanalisis.getTipo() == Tipo.RESERVADA_BREAK) {
             this.match(Tipo.RESERVADA_BREAK);
             this.match(Tipo.PUNTO_Y_COMA);
+
+            return new Return_Continue_Break("break", null, false, columnS_C);
+
         } else if (this.preanalisis.getTipo() == Tipo.RESERVADA_CONTINUE) {
             this.match(Tipo.RESERVADA_CONTINUE);
             this.match(Tipo.PUNTO_Y_COMA);
+
+            return new Return_Continue_Break("continue", null, false, columnS_C);
         }
     }
 
     /***********************************************************************************/
 
-    private WHILE() {
+    private WHILE(): Template_Instruccion {
+        /********************************/
+        let columnWhile = 0;
+        /********************************/
+        columnWhile = this.preanalisis.getColumna();
         this.match(Tipo.RESERVADA_WHILE);
         this.match(Tipo.PARENTESIS_IZQ);
         this.EXPRESSION();
         this.match(Tipo.PARENTESIS_DER);
         this.BLOQUE_CICLO();
+
+        return new While(this.expresion, this.lista_Bloque_Ciclo, columnWhile);
     }
 
     /***********************************************************************************/
@@ -616,10 +778,15 @@ export class Analizador_Sintactico {
 
     /***********************************************************************************/
 
-    private RETURN() {
+    private RETURN(): Template_Instruccion {
+        /********************************/
+        let columnReturn = 0;
+        /********************************/
         this.match(Tipo.RESERVADA_RETURN);
         this.RETURN_P();
         this.match(Tipo.PUNTO_Y_COMA);
+
+        return new Return_Continue_Break("return", this.expresion, true, columnReturn);
     }
 
     private RETURN_P() {
@@ -634,16 +801,24 @@ export class Analizador_Sintactico {
 
     /***********************************************************************************/
 
-    private PRINT() {
+    private PRINT(): Template_Instruccion {
+        /********************************/
+        let columnPrint = 0;
+        let tipoPrint = "";
+        /********************************/
+        columnPrint = this.preanalisis.getColumna();
         this.match(Tipo.RESERVADA_SYSTEM);
         this.match(Tipo.PUNTO);
         this.match(Tipo.RESERVADA_OUT);
         this.match(Tipo.PUNTO);
+        tipoPrint = this.preanalisis.getLexema();
         this.PRINT_P();
         this.match(Tipo.PARENTESIS_IZQ);
         this.EXPRESSION();
         this.match(Tipo.PARENTESIS_DER);
         this.match(Tipo.PUNTO_Y_COMA);
+
+        return new Print(tipoPrint, this.expresion, columnPrint);
     }
 
     private PRINT_P() {
@@ -795,7 +970,7 @@ export class Analizador_Sintactico {
         }
     }
 
-    private F(){
+    private F() {
         if (this.preanalisis.getTipo() == Tipo.PARENTESIS_IZQ) {
 
             this.expresion += " " + this.preanalisis.getLexema();
@@ -825,7 +1000,7 @@ export class Analizador_Sintactico {
 
     }
 
-    private PRIMITIVO(){
+    private PRIMITIVO() {
         if (this.preanalisis.getTipo() == Tipo.NUMERO_ENTERO) {
 
             this.expresion += " " + this.preanalisis.getLexema();
@@ -880,7 +1055,7 @@ export class Analizador_Sintactico {
     private INC_DEC_CALL_METHOD() {
         if (this.preanalisis.getTipo() == Tipo.PARENTESIS_IZQ) {
 
-            this.expresion +=  " " + this.preanalisis.getLexema();
+            this.expresion += " " + this.preanalisis.getLexema();
 
             this.match(Tipo.PARENTESIS_IZQ);
 

@@ -21,9 +21,6 @@ export let analyzer = (request: Request, response: Response)=>{
     listaTokensErrores = sintactico.getListaErrores();
     console.log("Se ha concluido el analisis sintactico");
 
-    let traduccion = resultado.traductorPY();
-    console.log(traduccion);
-
     if (listaTokensErrores.length > 0) {
         r = [
             {
@@ -33,7 +30,7 @@ export let analyzer = (request: Request, response: Response)=>{
         ]
     } else {
 
-        let traduccionPY = "";
+        let traduccionPY = resultado.traductorPY();
 
         r = [
             {

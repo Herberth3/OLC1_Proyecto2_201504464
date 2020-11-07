@@ -4,7 +4,12 @@ const Abstrac_Sintactic_Tree_1 = require("../AST/Abstrac_Sintactic_Tree");
 const Asignation_1 = require("../AST/Declaration-Definition-Global/Asignation");
 const Declaration_1 = require("../AST/Declaration-Definition-Global/Declaration");
 const Identifier_1 = require("../AST/Declaration-Definition-Global/Identifier");
+const Method_1 = require("../AST/Declaration-Definition-Global/Method");
+const Parameter_1 = require("../AST/Declaration-Definition-Global/Parameter");
 const Class_Interface_1 = require("../AST/Instructions/Class_Interface");
+const Print_1 = require("../AST/Sentences/Print");
+const Return_Continue_Break_1 = require("../AST/Sentences/Return_Continue_Break");
+const While_1 = require("../AST/Sentences/While");
 const Types_1 = require("../AST/Types");
 const Token_1 = require("./Token");
 const Token_Error_1 = require("./Token_Error");
@@ -16,6 +21,10 @@ class Analizador_Sintactico {
         this.lista_Instrucciones = [];
         this.lista_Decla_Asign = [];
         this.lista_Declaraciones_Global = [];
+        this.lista_Parametros = [];
+        this.lista_Sentencias = [];
+        this.lista_Definition_F = [];
+        this.lista_Bloque_Ciclo = [];
     }
     parsear(lista, listE) {
         this.listaTokens = lista;
@@ -42,6 +51,7 @@ class Analizador_Sintactico {
         this.match(Token_1.Tipo.RESERVADA_PUBLIC);
         instruccion = this.INSTRUCTIONS_P();
         this.lista_Declaraciones_Global = [];
+        this.lista_Definition_F = [];
         /****************************************/
         this.lista_Instrucciones.push(instruccion);
         /****************************************/
@@ -78,6 +88,7 @@ class Analizador_Sintactico {
             this.match(Token_1.Tipo.IDENTIFICADOR);
             this.match(Token_1.Tipo.LLAVE_IZQ);
             this.DEFINITION_FUNCTIONS();
+            arrayDecla = this.lista_Definition_F;
             this.match(Token_1.Tipo.LLAVE_DER);
         }
         else {
@@ -132,7 +143,9 @@ class Analizador_Sintactico {
             this.match(Token_1.Tipo.PUNTO_Y_COMA);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_PUBLIC) {
-            this.METHOD();
+            declaracion_g = this.METHOD();
+            this.lista_Parametros = [];
+            this.lista_Sentencias = [];
         }
         else {
             /** ERROR **/
@@ -153,14 +166,28 @@ class Analizador_Sintactico {
         return declaracion_g;
     }
     DEFINITION_FUNCTIONS() {
+        /*********************************/
+        let columnD = 0;
+        let tipo = "";
+        let idDefi = "";
+        let defiFunt;
+        /*********************************/
+        columnD = this.preanalisis.getColumna();
         if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_PUBLIC) {
             this.match(Token_1.Tipo.RESERVADA_PUBLIC);
+            tipo = this.preanalisis.getLexema();
             this.TYPE_METHOD();
+            idDefi = this.preanalisis.getLexema();
             this.match(Token_1.Tipo.IDENTIFICADOR);
             this.match(Token_1.Tipo.PARENTESIS_IZQ);
             this.LIST_PARAMETROS();
             this.match(Token_1.Tipo.PARENTESIS_DER);
             this.match(Token_1.Tipo.PUNTO_Y_COMA);
+            defiFunt = new Method_1.Method("public", tipo, idDefi, this.lista_Parametros, null, columnD);
+            /****************/
+            this.lista_Parametros = [];
+            /****************/
+            this.lista_Definition_F.push(defiFunt);
             this.DEFINITION_FUNCTIONS();
         }
     }
@@ -284,17 +311,24 @@ class Analizador_Sintactico {
     }
     ASIGNATION_LOCAL() {
         this.match(Token_1.Tipo.IDENTIFICADOR);
-        this.ASIGNATION_LOCAL_P();
+        return this.ASIGNATION_LOCAL_P();
     }
     ASIGNATION_LOCAL_P() {
+        /********************************/
+        let idAsign = "";
+        let columnAsign = 0;
+        /********************************/
+        idAsign = this.listaTokens[this.numPreanalisis - 1].getLexema();
+        columnAsign = this.listaTokens[this.numPreanalisis - 1].getColumna();
         if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_IGUAL || this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_POS_INCREMENTO
             || this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_POS_DECREMENTO) {
-            this.ASIGNATION_P();
+            return this.ASIGNATION_P();
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.PARENTESIS_IZQ) {
             this.match(Token_1.Tipo.PARENTESIS_IZQ);
             this.LIST_PARAMETROS_EXPRESSION();
             this.match(Token_1.Tipo.PARENTESIS_DER);
+            return new Identifier_1.Identifier(idAsign, this.expresion, Types_1.Type_Operation.LLAMADA_METODO, true, columnAsign);
         }
         else {
             /** ERROR **/
@@ -307,6 +341,7 @@ class Analizador_Sintactico {
             else {
                 this.match(Token_1.Tipo.PUNTO_Y_COMA);
             }
+            return new Declaration_1.Declaration("", [], 0);
         }
     }
     LIST_PARAMETROS_EXPRESSION() {
@@ -333,9 +368,15 @@ class Analizador_Sintactico {
     /***********************************************************************************/
     METHOD() {
         this.match(Token_1.Tipo.RESERVADA_PUBLIC);
-        this.METHOD_P();
+        return this.METHOD_P();
     }
     METHOD_P() {
+        /********************************/
+        let columnMethod = 0;
+        let tipo = "";
+        let idMethod = "";
+        /********************************/
+        columnMethod = this.listaTokens[this.numPreanalisis - 1].getColumna();
         if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_STATIC) {
             this.match(Token_1.Tipo.RESERVADA_STATIC);
             this.match(Token_1.Tipo.RESERVADA_VOID);
@@ -347,14 +388,18 @@ class Analizador_Sintactico {
             this.match(Token_1.Tipo.RESERVADA_ARGS);
             this.match(Token_1.Tipo.PARENTESIS_DER);
             this.BLOQUE_SENTENCIAS();
+            return new Method_1.Method("public", "void", "main", null, this.lista_Sentencias, columnMethod);
         }
         else {
+            tipo = this.preanalisis.getLexema();
             this.TYPE_METHOD();
+            idMethod = this.preanalisis.getLexema();
             this.match(Token_1.Tipo.IDENTIFICADOR);
             this.match(Token_1.Tipo.PARENTESIS_IZQ);
             this.LIST_PARAMETROS();
             this.match(Token_1.Tipo.PARENTESIS_DER);
             this.BLOQUE_SENTENCIAS();
+            return new Method_1.Method("public", tipo, idMethod, this.lista_Parametros, this.lista_Sentencias, columnMethod);
         }
     }
     TYPE_METHOD() {
@@ -373,19 +418,34 @@ class Analizador_Sintactico {
         }
     }
     PARAMETROS() {
-        this.PARAMETRO();
+        /*********************/
+        let parametro;
+        /*********************/
+        parametro = this.PARAMETRO();
+        this.lista_Parametros.push(parametro);
         this.PARAMETROS_P();
     }
     PARAMETROS_P() {
+        /*********************/
+        let parametro;
+        /*********************/
         if (this.preanalisis.getTipo() == Token_1.Tipo.COMA) {
             this.match(Token_1.Tipo.COMA);
-            this.PARAMETRO();
+            parametro = this.PARAMETRO();
+            this.lista_Parametros.push(parametro);
             this.PARAMETROS_P();
         }
     }
     PARAMETRO() {
+        /***************************/
+        let tipo = "";
+        let idParameter = "";
+        /***************************/
+        tipo = this.preanalisis.getLexema();
         this.TYPE_DATA();
+        idParameter = this.preanalisis.getLexema();
         this.match(Token_1.Tipo.IDENTIFICADOR);
+        return new Parameter_1.Parameter(tipo, idParameter);
     }
     BLOQUE_SENTENCIAS() {
         if (this.preanalisis.getTipo() == Token_1.Tipo.LLAVE_IZQ) {
@@ -408,45 +468,66 @@ class Analizador_Sintactico {
     }
     /***********************************************************************************/
     LIST_SENTENCIAS() {
+        /*****************************/
+        var sentencia_l;
+        /*****************************/
         if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_INT || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_BOOLEAN
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_DOUBLE || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_STRING
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_CHAR || this.preanalisis.getTipo() == Token_1.Tipo.IDENTIFICADOR
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_FOR || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_WHILE
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_DO || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_IF
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_RETURN || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_SYSTEM) {
-            this.SENTENCIAS();
+            sentencia_l = this.SENTENCIAS();
+            /*****************************/
+            this.lista_Sentencias.push(sentencia_l);
+            /*****************************/
             this.LIST_SENTENCIAS();
         }
     }
     SENTENCIAS() {
+        /*****************************/
+        var sentencia_l;
+        /*****************************/
         if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_INT || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_BOOLEAN
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_DOUBLE || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_STRING
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_CHAR) {
-            this.DECLARATION();
+            sentencia_l = this.DECLARATION();
+            this.lista_Decla_Asign = [];
             this.match(Token_1.Tipo.PUNTO_Y_COMA);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.IDENTIFICADOR) {
-            this.ASIGNATION_LOCAL();
+            sentencia_l = this.ASIGNATION_LOCAL();
+            /******************/
+            this.expresion = "";
+            /******************/
             this.match(Token_1.Tipo.PUNTO_Y_COMA);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_FOR) {
             this.FOR();
+            sentencia_l = new Return_Continue_Break_1.Return_Continue_Break("", null, false, 1);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_WHILE) {
-            this.WHILE();
+            sentencia_l = this.WHILE();
+            this.lista_Bloque_Ciclo = [];
+            this.expresion = "";
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_DO) {
             this.DO_WHILE();
+            sentencia_l = new Return_Continue_Break_1.Return_Continue_Break("", null, false, 1);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_IF) {
             this.IF();
+            sentencia_l = new Return_Continue_Break_1.Return_Continue_Break("", null, false, 1);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_RETURN) {
-            this.RETURN();
+            sentencia_l = this.RETURN();
+            this.expresion = "";
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_SYSTEM) {
-            this.PRINT();
+            sentencia_l = this.PRINT();
+            this.expresion = "";
         }
+        return sentencia_l;
     }
     /***********************************************************************************/
     FOR() {
@@ -477,10 +558,19 @@ class Analizador_Sintactico {
         }
     }
     LIST_SENTENCIAS_CICLO() {
-        this.SENTENCIAS_CICLO();
+        /*****************************/
+        var sentencia_c;
+        /*****************************/
+        sentencia_c = this.SENTENCIAS_CICLO();
+        /*****************************/
+        this.lista_Bloque_Ciclo.push(sentencia_c);
+        /*****************************/
         this.LIST_SENTENCIAS_CICLO_P();
     }
     LIST_SENTENCIAS_CICLO_P() {
+        /*****************************/
+        var sentencia_c;
+        /*****************************/
         if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_INT || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_BOOLEAN
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_DOUBLE || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_STRING
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_CHAR || this.preanalisis.getTipo() == Token_1.Tipo.IDENTIFICADOR
@@ -488,35 +578,49 @@ class Analizador_Sintactico {
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_DO || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_IF
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_RETURN || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_SYSTEM
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_BREAK || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_CONTINUE) {
-            this.SENTENCIAS_CICLO();
+            sentencia_c = this.SENTENCIAS_CICLO();
+            /*****************************/
+            this.lista_Bloque_Ciclo.push(sentencia_c);
+            /*****************************/
             this.LIST_SENTENCIAS_CICLO_P();
         }
     }
     SENTENCIAS_CICLO() {
+        /*********************/
+        let columnS_C = 0;
+        /*********************/
+        columnS_C = this.preanalisis.getColumna();
         if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_INT || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_BOOLEAN
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_DOUBLE || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_STRING
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_CHAR || this.preanalisis.getTipo() == Token_1.Tipo.IDENTIFICADOR
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_FOR || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_WHILE
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_DO || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_IF
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_RETURN || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_SYSTEM) {
-            this.SENTENCIAS();
+            return this.SENTENCIAS();
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_BREAK) {
             this.match(Token_1.Tipo.RESERVADA_BREAK);
             this.match(Token_1.Tipo.PUNTO_Y_COMA);
+            return new Return_Continue_Break_1.Return_Continue_Break("break", null, false, columnS_C);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_CONTINUE) {
             this.match(Token_1.Tipo.RESERVADA_CONTINUE);
             this.match(Token_1.Tipo.PUNTO_Y_COMA);
+            return new Return_Continue_Break_1.Return_Continue_Break("continue", null, false, columnS_C);
         }
     }
     /***********************************************************************************/
     WHILE() {
+        /********************************/
+        let columnWhile = 0;
+        /********************************/
+        columnWhile = this.preanalisis.getColumna();
         this.match(Token_1.Tipo.RESERVADA_WHILE);
         this.match(Token_1.Tipo.PARENTESIS_IZQ);
         this.EXPRESSION();
         this.match(Token_1.Tipo.PARENTESIS_DER);
         this.BLOQUE_CICLO();
+        return new While_1.While(this.expresion, this.lista_Bloque_Ciclo, columnWhile);
     }
     /***********************************************************************************/
     DO_WHILE() {
@@ -553,9 +657,13 @@ class Analizador_Sintactico {
     }
     /***********************************************************************************/
     RETURN() {
+        /********************************/
+        let columnReturn = 0;
+        /********************************/
         this.match(Token_1.Tipo.RESERVADA_RETURN);
         this.RETURN_P();
         this.match(Token_1.Tipo.PUNTO_Y_COMA);
+        return new Return_Continue_Break_1.Return_Continue_Break("return", this.expresion, true, columnReturn);
     }
     RETURN_P() {
         if (this.preanalisis.getTipo() == Token_1.Tipo.NUMERO_ENTERO || this.preanalisis.getTipo() == Token_1.Tipo.NUMERO_DECIMAL
@@ -568,15 +676,22 @@ class Analizador_Sintactico {
     }
     /***********************************************************************************/
     PRINT() {
+        /********************************/
+        let columnPrint = 0;
+        let tipoPrint = "";
+        /********************************/
+        columnPrint = this.preanalisis.getColumna();
         this.match(Token_1.Tipo.RESERVADA_SYSTEM);
         this.match(Token_1.Tipo.PUNTO);
         this.match(Token_1.Tipo.RESERVADA_OUT);
         this.match(Token_1.Tipo.PUNTO);
+        tipoPrint = this.preanalisis.getLexema();
         this.PRINT_P();
         this.match(Token_1.Tipo.PARENTESIS_IZQ);
         this.EXPRESSION();
         this.match(Token_1.Tipo.PARENTESIS_DER);
         this.match(Token_1.Tipo.PUNTO_Y_COMA);
+        return new Print_1.Print(tipoPrint, this.expresion, columnPrint);
     }
     PRINT_P() {
         if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_PRINTLN) {

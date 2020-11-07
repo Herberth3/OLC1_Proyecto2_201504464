@@ -4,7 +4,7 @@ import { Type_Operation } from "../Types";
 export class Identifier extends Template_Instruccion {
 
     identificador: string;
-    parametros: Array<Template_Instruccion>;
+    parametros: string;
     tipo_Ejecucion: Type_Operation;
     llamada_Metodo_Normal: boolean;
 
@@ -17,7 +17,7 @@ export class Identifier extends Template_Instruccion {
      * @param columna   Columna donde se encuentra el identificador.
      */
 
-    constructor(id: string, parameters: Array<Template_Instruccion>, tipo: Type_Operation, call_method_N: boolean, columna: number) {
+    constructor(id: string, parameters: string, tipo: Type_Operation, call_method_N: boolean, columna: number) {
         super(columna);
         this.identificador = id;
         this.parametros = parameters;
@@ -34,29 +34,11 @@ export class Identifier extends Template_Instruccion {
 
                 if (this.llamada_Metodo_Normal) {
                     llamada_M = this.calcularEspaciadoPY() + this.identificador + "(";
-
-                    for (let i = 0; i < this.parametros.length; i++) {
-                        const element = this.parametros[i];
-
-                        if (i == this.parametros.length - 1) {
-                            llamada_M += element.traductorPY();
-                        } else {
-                            llamada_M += element.traductorPY() + ", ";
-                        }
-                    }
-                    llamada_M += ");\n\n";
+                    llamada_M += this.parametros;
+                    llamada_M += ")\n\n";
                 } else {
                     llamada_M = this.identificador + "(";
-
-                    for (let i = 0; i < this.parametros.length; i++) {
-                        const element = this.parametros[i];
-
-                        if (i == this.parametros.length - 1) {
-                            llamada_M += element.traductorPY();
-                        } else {
-                            llamada_M += element.traductorPY() + ", ";
-                        }
-                    }
+                    llamada_M += this.parametros;
                     llamada_M += ")";
                 }
                 return llamada_M;
