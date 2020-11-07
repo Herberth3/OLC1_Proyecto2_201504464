@@ -1,0 +1,22 @@
+export enum Type_Operation{
+    SUMA,
+    RESTA,
+    MULTIPLICACION,
+    DIVISION,
+    MENOS_UNARIO,
+    OR,
+    AND,
+    XOR,
+    NOT_UNARIO,
+    DOBLE_IGUAL,
+    DIFERENTE_DE,
+    MENOR_QUE,
+    MAYOR_QUE,
+    MENOR_IGUAL_QUE,
+    MAYOR_IGUAL_QUE,
+    POS_INCREMENTO,
+    POS_DECREMENTO,
+    PARENTESIS,
+    IDENTIFICADOR,
+    LLAMADA_METODO
+}

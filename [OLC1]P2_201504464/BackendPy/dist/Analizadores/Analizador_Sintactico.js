@@ -1,10 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const Abstrac_Sintactic_Tree_1 = require("../AST/Abstrac_Sintactic_Tree");
+const Asignation_1 = require("../AST/Declaration-Definition-Global/Asignation");
+const Declaration_1 = require("../AST/Declaration-Definition-Global/Declaration");
+const Identifier_1 = require("../AST/Declaration-Definition-Global/Identifier");
+const Class_Interface_1 = require("../AST/Instructions/Class_Interface");
+const Types_1 = require("../AST/Types");
 const Token_1 = require("./Token");
 const Token_Error_1 = require("./Token_Error");
 class Analizador_Sintactico {
     constructor() {
         this.errorSintactico = false;
+        /** RECOLECTOR DE EXPRESION **/
+        this.expresion = "";
+        this.lista_Instrucciones = [];
+        this.lista_Decla_Asign = [];
+        this.lista_Declaraciones_Global = [];
     }
     parsear(lista, listE) {
         this.listaTokens = lista;
@@ -12,6 +23,10 @@ class Analizador_Sintactico {
         this.preanalisis = this.listaTokens[0];
         this.numPreanalisis = 0;
         this.INICIO();
+        /***********************************************************/
+        let ast = new Abstrac_Sintactic_Tree_1.Abstrac_Sintactic_Tree(this.lista_Instrucciones);
+        return ast;
+        /***********************************************************/
     }
     INICIO() {
         this.LIST_INSTRUCTIONS();
@@ -21,8 +36,15 @@ class Analizador_Sintactico {
         this.LIST_INSTRUCTIONS_P();
     }
     INSTRUCTION() {
+        /*******************************/
+        var instruccion;
+        /*******************************/
         this.match(Token_1.Tipo.RESERVADA_PUBLIC);
-        this.INSTRUCTIONS_P();
+        instruccion = this.INSTRUCTIONS_P();
+        this.lista_Declaraciones_Global = [];
+        /****************************************/
+        this.lista_Instrucciones.push(instruccion);
+        /****************************************/
     }
     LIST_INSTRUCTIONS_P() {
         if (this.preanalisis.getTipo() != Token_1.Tipo.LLAVE_DER && this.preanalisis.getTipo() != Token_1.Tipo.ULTIMO) {
@@ -31,15 +53,28 @@ class Analizador_Sintactico {
         }
     }
     INSTRUCTIONS_P() {
+        /**************************/
+        var cla_int = "";
+        var id = "";
+        var arrayDecla = [];
+        var column = 0;
+        /**************************/
         if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_CLASS) {
+            cla_int = this.preanalisis.getLexema();
+            column = this.preanalisis.getColumna() - 7;
             this.match(Token_1.Tipo.RESERVADA_CLASS);
+            id = this.preanalisis.getLexema();
             this.match(Token_1.Tipo.IDENTIFICADOR);
             this.match(Token_1.Tipo.LLAVE_IZQ);
             this.LIST_DECLARATION_GLOBAL();
+            arrayDecla = this.lista_Declaraciones_Global;
             this.match(Token_1.Tipo.LLAVE_DER);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_INTERFACE) {
+            cla_int = this.preanalisis.getLexema();
+            column = this.preanalisis.getColumna() - 7;
             this.match(Token_1.Tipo.RESERVADA_INTERFACE);
+            id = this.preanalisis.getLexema();
             this.match(Token_1.Tipo.IDENTIFICADOR);
             this.match(Token_1.Tipo.LLAVE_IZQ);
             this.DEFINITION_FUNCTIONS();
@@ -58,26 +93,42 @@ class Analizador_Sintactico {
                 this.match(Token_1.Tipo.LLAVE_DER);
             }
         }
+        /***************************/
+        return new Class_Interface_1.Class_Interface("public", cla_int, id, arrayDecla, column);
+        /***************************/
     }
     /***********************************************************************************/
     LIST_DECLARATION_GLOBAL() {
+        /*****************************/
+        var declaracion_g;
+        /*****************************/
         if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_INT || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_BOOLEAN
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_DOUBLE || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_STRING
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_CHAR || this.preanalisis.getTipo() == Token_1.Tipo.IDENTIFICADOR
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_PUBLIC) {
-            this.DECLARATION_GLOBAL();
+            declaracion_g = this.DECLARATION_GLOBAL();
+            /**********************************/
+            this.lista_Declaraciones_Global.push(declaracion_g);
+            /**********************************/
             this.LIST_DECLARATION_GLOBAL();
         }
     }
     DECLARATION_GLOBAL() {
+        /*****************************/
+        var declaracion_g;
+        /*****************************/
         if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_INT || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_BOOLEAN
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_DOUBLE || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_STRING
             || this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_CHAR) {
-            this.DECLARATION();
+            declaracion_g = this.DECLARATION();
+            this.lista_Decla_Asign = [];
             this.match(Token_1.Tipo.PUNTO_Y_COMA);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.IDENTIFICADOR) {
-            this.ASIGNATION();
+            declaracion_g = this.ASIGNATION();
+            /******************/
+            this.expresion = "";
+            /******************/
             this.match(Token_1.Tipo.PUNTO_Y_COMA);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_PUBLIC) {
@@ -95,7 +146,11 @@ class Analizador_Sintactico {
                 this.errorSintactico = true;
                 this.match(Token_1.Tipo.PUNTO_Y_COMA);
             }
+            /*****************************************/
+            declaracion_g = new Declaration_1.Declaration("", [], 0);
+            /*****************************************/
         }
+        return declaracion_g;
     }
     DEFINITION_FUNCTIONS() {
         if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_PUBLIC) {
@@ -111,8 +166,17 @@ class Analizador_Sintactico {
     }
     /***********************************************************************************/
     DECLARATION() {
+        /*****************************/
+        let tipo = "";
+        let columDeclaration = 0;
+        /*****************************/
+        tipo = this.preanalisis.getLexema();
+        columDeclaration = this.preanalisis.getColumna();
         this.TYPE_DATA();
         this.LIST_DECLA_ASIGN();
+        /*****************************/
+        return new Declaration_1.Declaration(tipo, this.lista_Decla_Asign, columDeclaration);
+        /*****************************/
     }
     TYPE_DATA() {
         if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_INT) {
@@ -155,30 +219,54 @@ class Analizador_Sintactico {
         }
     }
     DECLA_ASIGN() {
+        /******************************/
+        let decla_asign;
+        /******************************/
         this.match(Token_1.Tipo.IDENTIFICADOR);
-        this.DECLA_ASIGN_P();
+        decla_asign = this.DECLA_ASIGN_P();
+        this.expresion = "";
+        /********************************/
+        this.lista_Decla_Asign.push(decla_asign);
+        /********************************/
     }
     DECLA_ASIGN_P() {
+        /********************************/
+        let idAsign = "";
+        let columnAsign = 0;
+        /********************************/
+        idAsign = this.listaTokens[this.numPreanalisis - 1].getLexema();
+        columnAsign = this.listaTokens[this.numPreanalisis - 1].getColumna();
         if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_IGUAL) {
             this.match(Token_1.Tipo.SIGNO_IGUAL);
             this.EXPRESSION();
+            return new Asignation_1.Asignation(idAsign, this.expresion, false, columnAsign);
         }
+        return new Identifier_1.Identifier(idAsign, null, Types_1.Type_Operation.IDENTIFICADOR, false, 1);
     }
     /***********************************************************************************/
     ASIGNATION() {
         this.match(Token_1.Tipo.IDENTIFICADOR);
-        this.ASIGNATION_P();
+        return this.ASIGNATION_P();
     }
     ASIGNATION_P() {
+        /********************************/
+        let idAsign = "";
+        let columnAsign = 0;
+        /********************************/
+        idAsign = this.listaTokens[this.numPreanalisis - 1].getLexema();
+        columnAsign = this.listaTokens[this.numPreanalisis - 1].getColumna();
         if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_IGUAL) {
             this.match(Token_1.Tipo.SIGNO_IGUAL);
             this.EXPRESSION();
+            return new Asignation_1.Asignation(idAsign, this.expresion, true, columnAsign);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_POS_INCREMENTO) {
             this.match(Token_1.Tipo.SIGNO_POS_INCREMENTO);
+            return new Identifier_1.Identifier(idAsign, null, Types_1.Type_Operation.POS_INCREMENTO, false, columnAsign);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_POS_DECREMENTO) {
             this.match(Token_1.Tipo.SIGNO_POS_DECREMENTO);
+            return new Identifier_1.Identifier(idAsign, null, Types_1.Type_Operation.POS_DECREMENTO, false, columnAsign);
         }
         else {
             /** ERROR **/
@@ -191,6 +279,7 @@ class Analizador_Sintactico {
             else {
                 this.match(Token_1.Tipo.PUNTO_Y_COMA);
             }
+            return new Declaration_1.Declaration("", [], 0);
         }
     }
     ASIGNATION_LOCAL() {
@@ -235,6 +324,7 @@ class Analizador_Sintactico {
     }
     EXPRESSIONS_P() {
         if (this.preanalisis.getTipo() == Token_1.Tipo.COMA) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.COMA);
             this.EXPRESSION();
             this.EXPRESSIONS_P();
@@ -515,11 +605,13 @@ class Analizador_Sintactico {
     }
     E_P() {
         if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_MAS) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.SIGNO_MAS);
             this.T();
             this.E_P();
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_MENOS) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.SIGNO_MENOS);
             this.T();
             this.E_P();
@@ -531,11 +623,13 @@ class Analizador_Sintactico {
     }
     T_P() {
         if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_POR) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.SIGNO_POR);
             this.L();
             this.T_P();
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_DIVISION) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.SIGNO_DIVISION);
             this.L();
             this.T_P();
@@ -547,16 +641,19 @@ class Analizador_Sintactico {
     }
     L_P() {
         if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_AND) {
+            this.expresion += " and";
             this.match(Token_1.Tipo.SIGNO_AND);
             this.R();
             this.L_P();
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_OR) {
+            this.expresion += " or";
             this.match(Token_1.Tipo.SIGNO_OR);
             this.R();
             this.L_P();
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_XOR) {
+            this.expresion += " xor";
             this.match(Token_1.Tipo.SIGNO_XOR);
             this.R();
             this.L_P();
@@ -568,31 +665,37 @@ class Analizador_Sintactico {
     }
     R_P() {
         if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_MENOR_QUE) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.SIGNO_MENOR_QUE);
             this.F();
             this.R_P();
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_MAYOR_QUE) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.SIGNO_MAYOR_QUE);
             this.F();
             this.R_P();
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_MENOR_IGUAL_QUE) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.SIGNO_MENOR_IGUAL_QUE);
             this.F();
             this.R_P();
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_MAYOR_IGUAL_QUE) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.SIGNO_MAYOR_IGUAL_QUE);
             this.F();
             this.R_P();
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_DOBLE_IGUAL) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.SIGNO_DOBLE_IGUAL);
             this.F();
             this.R_P();
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_DIFERENTE_DE) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.SIGNO_DIFERENTE_DE);
             this.F();
             this.R_P();
@@ -600,15 +703,19 @@ class Analizador_Sintactico {
     }
     F() {
         if (this.preanalisis.getTipo() == Token_1.Tipo.PARENTESIS_IZQ) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.PARENTESIS_IZQ);
             this.EXPRESSION();
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.PARENTESIS_DER);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_NOT) {
+            this.expresion += " not";
             this.match(Token_1.Tipo.SIGNO_NOT);
             this.EXPRESSION();
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_MENOS) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.SIGNO_MENOS);
             this.EXPRESSION();
         }
@@ -618,24 +725,31 @@ class Analizador_Sintactico {
     }
     PRIMITIVO() {
         if (this.preanalisis.getTipo() == Token_1.Tipo.NUMERO_ENTERO) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.NUMERO_ENTERO);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.NUMERO_DECIMAL) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.NUMERO_DECIMAL);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_FALSE) {
+            this.expresion += " False";
             this.match(Token_1.Tipo.RESERVADA_FALSE);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.RESERVADA_TRUE) {
+            this.expresion += " True";
             this.match(Token_1.Tipo.RESERVADA_TRUE);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.CADENA_STRING) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.CADENA_STRING);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.CADENA_CHAR) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.CADENA_CHAR);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.IDENTIFICADOR) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.IDENTIFICADOR);
             this.INC_DEC_CALL_METHOD();
         }
@@ -654,14 +768,18 @@ class Analizador_Sintactico {
     }
     INC_DEC_CALL_METHOD() {
         if (this.preanalisis.getTipo() == Token_1.Tipo.PARENTESIS_IZQ) {
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.PARENTESIS_IZQ);
             this.LIST_PARAMETROS_EXPRESSION();
+            this.expresion += " " + this.preanalisis.getLexema();
             this.match(Token_1.Tipo.PARENTESIS_DER);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_POS_INCREMENTO) {
+            this.expresion += " += 1";
             this.match(Token_1.Tipo.SIGNO_POS_INCREMENTO);
         }
         else if (this.preanalisis.getTipo() == Token_1.Tipo.SIGNO_POS_DECREMENTO) {
+            this.expresion += " -= 1";
             this.match(Token_1.Tipo.SIGNO_POS_DECREMENTO);
         }
     }

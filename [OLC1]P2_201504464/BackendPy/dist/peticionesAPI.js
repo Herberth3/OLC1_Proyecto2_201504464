@@ -11,9 +11,11 @@ exports.analyzer = (request, response) => {
     let listaTokens = analizador.analizador(textoDocumento);
     let listaTokensErrores = analizador.analizador_Error();
     listaTokens.push(new Token_1.Token(Token_1.Tipo.ULTIMO, "ultimo", 0, 0));
-    sintactico.parsear(listaTokens, listaTokensErrores);
+    let resultado = sintactico.parsear(listaTokens, listaTokensErrores);
     listaTokensErrores = sintactico.getListaErrores();
     console.log("Se ha concluido el analisis sintactico");
+    let traduccion = resultado.traductorPY();
+    console.log(traduccion);
     if (listaTokensErrores.length > 0) {
         r = [
             {

@@ -1,0 +1,25 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var Type_Operation;
+(function (Type_Operation) {
+    Type_Operation[Type_Operation["SUMA"] = 0] = "SUMA";
+    Type_Operation[Type_Operation["RESTA"] = 1] = "RESTA";
+    Type_Operation[Type_Operation["MULTIPLICACION"] = 2] = "MULTIPLICACION";
+    Type_Operation[Type_Operation["DIVISION"] = 3] = "DIVISION";
+    Type_Operation[Type_Operation["MENOS_UNARIO"] = 4] = "MENOS_UNARIO";
+    Type_Operation[Type_Operation["OR"] = 5] = "OR";
+    Type_Operation[Type_Operation["AND"] = 6] = "AND";
+    Type_Operation[Type_Operation["XOR"] = 7] = "XOR";
+    Type_Operation[Type_Operation["NOT_UNARIO"] = 8] = "NOT_UNARIO";
+    Type_Operation[Type_Operation["DOBLE_IGUAL"] = 9] = "DOBLE_IGUAL";
+    Type_Operation[Type_Operation["DIFERENTE_DE"] = 10] = "DIFERENTE_DE";
+    Type_Operation[Type_Operation["MENOR_QUE"] = 11] = "MENOR_QUE";
+    Type_Operation[Type_Operation["MAYOR_QUE"] = 12] = "MAYOR_QUE";
+    Type_Operation[Type_Operation["MENOR_IGUAL_QUE"] = 13] = "MENOR_IGUAL_QUE";
+    Type_Operation[Type_Operation["MAYOR_IGUAL_QUE"] = 14] = "MAYOR_IGUAL_QUE";
+    Type_Operation[Type_Operation["POS_INCREMENTO"] = 15] = "POS_INCREMENTO";
+    Type_Operation[Type_Operation["POS_DECREMENTO"] = 16] = "POS_DECREMENTO";
+    Type_Operation[Type_Operation["PARENTESIS"] = 17] = "PARENTESIS";
+    Type_Operation[Type_Operation["IDENTIFICADOR"] = 18] = "IDENTIFICADOR";
+    Type_Operation[Type_Operation["LLAMADA_METODO"] = 19] = "LLAMADA_METODO";
+})(Type_Operation = exports.Type_Operation || (exports.Type_Operation = {}));
