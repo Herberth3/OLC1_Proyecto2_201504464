@@ -15,13 +15,6 @@ class Do_While extends template_Instruccion_1.Template_Instruccion {
     }
     traductorPY() {
         let do_whilePY = "";
-        do_whilePY += this.calcularEspaciadoPY() + "do {\n";
-        this.sentencias_Ciclo.forEach(element => {
-            do_whilePY += element.traductorPY();
-        });
-        do_whilePY += this.calcularEspaciadoPY() + "}\n";
-        do_whilePY += this.calcularEspaciadoPY() + "while (";
-        do_whilePY += this.expresion_Condicion.traductorPY() + ");\n\n";
         return do_whilePY;
     }
     calcularEspaciadoPY() {

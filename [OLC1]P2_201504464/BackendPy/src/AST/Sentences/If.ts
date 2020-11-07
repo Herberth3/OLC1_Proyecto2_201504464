@@ -37,53 +37,6 @@ export class If extends Template_Instruccion {
     traductorPY(): string {
         let ifPY: string = "";
 
-        if (this.empieza_ElseIF) {
-            ifPY += this.calcularEspaciadoPY() + "if (";
-        } else {
-            ifPY += "if (";
-        }
-
-        ifPY += this.expresion_Condicion.traductorPY() + ") {\n";
-
-        this.sentencias_Ciclo1.forEach(element => {
-            ifPY += element.traductorPY();
-        });
-
-        if (this.existe_Else || this.existe_ElseIf) {
-
-            if (this.empieza_ElseIF) {
-                ifPY += this.calcularEspaciadoPY() + "}";
-            } else {
-                ifPY += this.calcularEspaciadoPY().replace("      ", "") + "}";
-            }
-
-            if (this.existe_Else) {
-                ifPY += "else {\n";
-
-                this.sentencias_Ciclo2.forEach(element => {
-                    ifPY += element.traductorPY();
-                });
-
-                if (this.empieza_ElseIF) {
-                    ifPY += this.calcularEspaciadoPY() + "}\n\n";
-                } else {
-                    ifPY += this.calcularEspaciadoPY().replace("      ", "") + "}\n\n";
-                }
-            }
-
-            if (this.existe_ElseIf) {
-                ifPY += "else " + this.sentencia_If.traductorPY();
-            }
-
-        } else {
-
-            if (this.empieza_ElseIF) {
-                ifPY += this.calcularEspaciadoPY() + "}\n\n";
-            } else {
-                ifPY += this.calcularEspaciadoPY().replace("      ", "") + "}\n\n";
-            }
-        }
-
         return ifPY;
     }
 

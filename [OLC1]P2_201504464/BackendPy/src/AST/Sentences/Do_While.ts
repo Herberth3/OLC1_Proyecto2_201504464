@@ -20,17 +20,6 @@ export class Do_While extends Template_Instruccion{
     
     traductorPY(): string {
         let do_whilePY: string = "";
-
-        do_whilePY += this.calcularEspaciadoPY() + "do {\n";
-
-        this.sentencias_Ciclo.forEach(element => {
-            do_whilePY += element.traductorPY();
-        });
-
-        do_whilePY += this.calcularEspaciadoPY() + "}\n";
-        do_whilePY += this.calcularEspaciadoPY() + "while (";
-        do_whilePY += this.expresion_Condicion.traductorPY() + ");\n\n"
-
         return do_whilePY;
     }
     

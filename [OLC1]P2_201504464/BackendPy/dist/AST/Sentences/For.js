@@ -19,18 +19,7 @@ class For extends template_Instruccion_1.Template_Instruccion {
     }
     traductorPY() {
         let forPY = "";
-        /** SE LE QUITA EL ESPACIADO QUE TRAE LA DECLARACION AL INICIO CON EL METODO TRIM **/
-        let declaracion_For = this.declaracion.traductorPY().trim();
-        /** SE REEMPLAZAN LOS SALTOS DE LINEA QUE TRAE LA DECLARACION AL FINAL **/
-        declaracion_For = declaracion_For.replace("\n", "");
-        /** SE CONTRUYE EL CICLO FOR PARA EL LENGUAJE JAVASCRIPT **/
-        forPY += this.calcularEspaciadoPY() + "for (" + declaracion_For + " ";
-        forPY += this.expresion_Condicion.traductorPY() + "; ";
-        forPY += this.expresion_Incre_Decre.traductorPY() + ") {\n";
-        this.sentencias_Ciclo.forEach(element => {
-            forPY += element.traductorPY();
-        });
-        return forPY + this.calcularEspaciadoPY() + "}\n\n";
+        return forPY;
     }
     calcularEspaciadoPY() {
         let espacios = "";
